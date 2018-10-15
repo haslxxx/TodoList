@@ -1,11 +1,12 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Contact
+      Backlog List
     </ion-title>
   </ion-navbar>
 </ion-header>
 
+<!--
 <ion-content>
   <ion-list>
     <ion-list-header>Follow us on Twitter</ion-list-header>
@@ -14,4 +15,21 @@
       @ionicframework
     </ion-item>
   </ion-list>
+</ion-content>
+-->
+<ion-content>
+  <ion-list>
+    <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
+      <!--
+      <ion-icon [name]="item.icon" item-start></ion-icon>
+      -->
+      {{item.title}}
+      <div class="item-note" item-end>
+        {{item.id}}
+      </div>
+    </button>
+  </ion-list>
+  <div *ngIf="selectedItem" padding>
+    You navigated here from <b>{{selectedItem.title}}</b>
+  </div>
 </ion-content>
