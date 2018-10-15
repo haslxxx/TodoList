@@ -22,10 +22,10 @@ export class ContactPage {
 
 
   constructor(public navCtrl: NavController) {
-    this.listBacklog();
+    this.listBacklogMock();
   }
 
-  listBacklog() {
+  listBacklogMock() {
     this.items = [];
 
     var i = 0;

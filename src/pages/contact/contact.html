@@ -33,3 +33,54 @@
     You navigated here from <b>{{selectedItem.title}}</b>
   </div>
 </ion-content>
+
+<!-- von Martin
+<ion-content
+class="background-contents"
+padding>
+
+
+<ion-list
+*ngIf="dataService.foods.length > 0"
+id="my-foodlist">
+
+<ion-item-sliding
+*ngFor="let food of dataService.foods | orderBy: order">
+
+
+
+<ion-item
+text-wrap>
+
+{{food.title}}
+
+<ion-icon
+item-end
+name="ios-arrow-dropleft-outline"
+color="icon-slide"></ion-icon>
+
+</ion-item>
+
+
+
+<ion-item-options
+side="right">
+
+<button
+ion-button
+color="light"
+(click)="alertEditFood(food)">
+
+<ion-icon
+name="create"></ion-icon>
+
+</button>
+
+<button
+ion-button
+color="danger"
+(click)="alertDeleteFood(food)">
+
+
+
+-->
