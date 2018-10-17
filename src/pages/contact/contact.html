@@ -1,38 +1,55 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>
-      Backlog List
-    </ion-title>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-10>
+            <ion-title id="list-title">Backlog List</ion-title>
+        </ion-col>          
+        <ion-col col-1>
+            <button ion-fab mini color="primary" (click)="newClicked()">+</button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>  
   </ion-navbar>
 </ion-header>
 
-<!--
-<ion-content>
+
+<!--   NEU -->
+<ion-content class="background-contents" padding>
   <ion-list>
-    <ion-list-header>Follow us on Twitter</ion-list-header>
-    <ion-item>
-      <ion-icon name="ionic" item-start></ion-icon>
-      @ionicframework
-    </ion-item>
+    <ion-item-sliding *ngFor="let item of items" >
+      <ion-item text-wrap>
+        <ion-row>
+          <ion-col col-12 *ngIf="screenStyle !='landscape'"> {{item.title}} </ion-col>
+          <ion-col col-6 *ngIf="screenStyle =='landscape'"> {{item.title}} </ion-col>
+          
+          <ion-col col-2 *ngIf="screenStyle =='landscape'">{{item.id}}</ion-col>
+          <ion-col col-2 *ngIf="screenStyle =='landscape'">{{item.priority}}</ion-col>
+          <ion-col col-2 *ngIf="screenStyle =='landscape'">{{item.category}}</ion-col>
+
+
+        </ion-row>
+        <ion-icon item-end
+            name="ios-arrow-dropleft-outline"
+            color="icon-slide">
+        </ion-icon>
+      </ion-item>
+      <ion-item-options side="right">
+        <button ion-button color="light" (click)="itemEdit(item)">
+          <ion-icon name="create"></ion-icon>
+        </button>
+        <button ion-button color="secondary" (click)="itemSelectForTodo(item)">
+            <ion-icon name="walk"></ion-icon>
+          </button>
+        <button ion-button color="danger" (click)="itemDelete(item)">
+            <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
   </ion-list>
 </ion-content>
--->
-<ion-content>
-  <ion-list>
-    <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
-      <!--
-      <ion-icon [name]="item.icon" item-start></ion-icon>
-      -->
-      {{item.title}}
-      <div class="item-note" item-end>
-        {{item.id}}
-      </div>
-    </button>
-  </ion-list>
-  <div *ngIf="selectedItem" padding>
-    You navigated here from <b>{{selectedItem.title}}</b>
-  </div>
-</ion-content>
+
+
 
 <!-- von Martin
 <ion-content
@@ -81,6 +98,20 @@ ion-button
 color="danger"
 (click)="alertDeleteFood(food)">
 
+<ion-icon
+name="trash"></ion-icon>
 
+</button>
+
+</ion-item-options>
+
+</ion-item-sliding>
+
+
+
+</ion-list>
+
+
+</ion-content>
 
 -->

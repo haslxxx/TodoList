@@ -10,6 +10,17 @@ import { TabsPage } from '../pages/tabs/tabs';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { ToDoListPage } from '../pages/to-do-list/to-do-list';
+import { ItemDetailsPage } from '../pages/item-details/item-details';
+
+//Daten
+import { IonicStorageModule } from '@ionic/storage'; //STORAGE hält die daten lokal, die mit firestore synchronisiert werden
+import { KanbandataProvider } from '../providers/kanbandata/kanbandata';
+
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
+
+//import { CommonModule } from '@angular/common';
+
 
 @NgModule({
   declarations: [
@@ -17,11 +28,15 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     AboutPage,
     ContactPage,
     HomePage,
-    TabsPage
+    TabsPage,
+    ItemDetailsPage,
+    ToDoListPage
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    //CommonModule,  //ngIf etc   ... nutzt aber nix :-(
+    IonicModule.forRoot(MyApp),
+    IonicStorageModule.forRoot()  //STORAGE
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -29,12 +44,16 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     AboutPage,
     ContactPage,
     HomePage,
-    TabsPage
+    TabsPage,
+    ToDoListPage,
+    ItemDetailsPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    ScreenOrientation,
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    KanbandataProvider
   ]
 })
 export class AppModule {}

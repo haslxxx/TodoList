@@ -8,11 +8,71 @@
 
   <ion-navbar>
     <ion-title>ItemDetails</ion-title>
+    <button menuToggle *ngIf="!selectedItem">
+        <ion-icon name="menu"></ion-icon>
+      </button>
+      <ion-title>{{selectedItem.title}} </ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
+  <ion-item>
+      <ion-label color="primary" type="text" floating >Titel</ion-label>
+      <ion-input [(ngModel)]  ="selectedItem.title"></ion-input>
+  </ion-item>
+  <ion-item>
+      <ion-label color="primary" type="text" floating>Beschreibung</ion-label>
+      <ion-input [(ngModel)]  ="selectedItem.description"></ion-input>
+  </ion-item>
+  <ion-item>
+      <ion-label color="primary" type="text" floating>Priorität</ion-label>
+      <ion-input [(ngModel)]  ="selectedItem.priority"></ion-input>
+  </ion-item>
+  <ion-item>
+      <ion-label color="primary">Kategorie</ion-label>
+      <ion-select [(ngModel)]="selectedItem.category">
+        <ion-option value="1">HAUS_GARTEN</ion-option>
+        <ion-option value="2">UNI</ion-option> 
+        <ion-option value="3">FREIZEIT</ion-option>
+        <ion-option value="4">ADMIN</ion-option>
+        <ion-option value="5">SONSTIGES</ion-option>
+      </ion-select>
+  </ion-item>
+  <ion-item>
+      <ion-label color="primary">Gewichtung</ion-label>
+      <ion-select [(ngModel)]="selectedItem.weight">
+        <ion-option value="1">EASY</ion-option>
+        <ion-option value="2">NORMAL</ion-option> 
+        <ion-option value="3">HEAVY</ion-option>
+      </ion-select>
+  </ion-item>
+  <ion-item>
+      <ion-label color="primary">Status</ion-label>
+      <ion-select [(ngModel)]="selectedItem.status">
+        <ion-option value="1">GELOGGT</ion-option>
+        <ion-option value="2">TODO</ion-option> 
+        <ion-option value="3">ERLEDIGT</ion-option> 
+      </ion-select>
+  </ion-item>
+  <ion-item>
+      <ion-label color="primary" type="text" floating>Geplante Fertigstellung</ion-label>
+      <ion-datetime displayFormat="DD.MM.YYYY" [(ngModel)]  ="selectedItem.dateDue"></ion-datetime>
+  </ion-item>
+  <ion-item>
+      <ion-label color="primary">Art des Plandatums</ion-label>
+      <ion-select [(ngModel)]="selectedItem.dateType">
+        <ion-option value="1">FIXIERT</ion-option>
+        <ion-option value="2">NUR_GEPLANT</ion-option> 
+      </ion-select>
+  </ion-item>
+  <ion-item>
+      <ion-label color="primary" type="text" floating>Erledigungsdatum</ion-label>
+      <ion-datetime displayFormat="DD.MM.YYYY" [(ngModel)]  ="selectedItem.dateDone"></ion-datetime>
+  </ion-item>
+
+
+
 
 </ion-content>

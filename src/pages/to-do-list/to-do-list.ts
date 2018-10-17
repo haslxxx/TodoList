@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 /**
- * Generated class for the ItemDetailsPage page.
+ * Generated class for the ToDoListPage page.
  *
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
@@ -10,20 +10,16 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 @IonicPage()
 @Component({
-  selector: 'page-item-details',
-  templateUrl: 'item-details.html',
+  selector: 'page-to-do-list',
+  templateUrl: 'to-do-list.html',
 })
-export class ItemDetailsPage {
-
-  selectedItem: any; 
+export class ToDoListPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
-    this.selectedItem = navParams.get('item');
-    console.log("ItemSelected " + this.selectedItem.title);
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad ItemDetailsPage');
+    console.log('ionViewDidLoad ToDoListPage');
   }
 
 }
