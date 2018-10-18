@@ -46,13 +46,13 @@ export class KanbandataProvider {
   backlogItems: Array<BacklogItem>;
   myStorage:Storage;
 
-  constructor(public storage: Storage) {
+  constructor(private storage: Storage) {
       console.log('Hello KanbandataProvider Provider');
       // 1.)
       //this.makeListBacklogMock();  // Zuerst mit Mockdata arbeiten
       // 2.)
       this.myStorage = storage; //Storageobjekt speichern
-      this.restoreItems(this.myStorage);
+      this.restoreItems();
 
   }
 
@@ -61,33 +61,63 @@ export class KanbandataProvider {
     return this.backlogItems;
   }
 
+
+  /*
+  getNextId() { // durchsucht die gesamte itemsList und findet den höchsten wert für ID
+    var maxIdObject;
+    console.log("GetNextId");
+    maxIdObject = _.max(this.itemsList, function(activity){return activity.id;} );
+    var newId =  maxIdObject.id + 1 ;
+
+    console.log(newId);
+    return newId;
+  }
+*/
   // 2.) ############## Local STORAGE 
-  restoreItems(storage: Storage) {
-    storage.length().then((val) => { 
+  restoreItems() {
+    this.myStorage.length().then((val) => { 
       console.log("StorageLength");
       console.log(val);    
       if (val == 0)  { //Keine einträge --> neu anlegen  
         console.log("Empty List !!)");
-        this.storage.set('kanbantodo', this.backlogItemsMock); // einmalig laufen lassen
+        this.myStorage.set('kanbantodo', this.backlogItemsMock); // Wenn leer dann mit Dummydaten füllen
       } else {
-        this.storage.get('kanbantodo').then((val1) => { //key value pair holen 
-          if (val == null) { //Keine einträge --> neu anlegen 
+        this.myStorage.get('kanbantodo').then((val1) => { //key value pair holen 
+          if (val1 == null) { //Keine einträge --> neu anlegen 
             console.log("No Kanban data");
-            this.storage.set('kanbantodo', this.backlogItemsMock); // einmalig laufen lassen
+            this.myStorage.set('kanbantodo', this.backlogItemsMock); // Wenn leer dann mit Dummydaten füllen
           } else {
             console.log("Found Kanban data"); // HURRA Daten sind vorhanden
             this.backlogItems = val1;  // Ins lokale anzeigeArray für die ListenView damit !
+            
           }
         });   
       };
     });  
-/*
-    storage.get('activities').then((val) => { //key value pair holen  (speichern siehe unten)
-      this.restoredItems = val;
-       this.restoreOptions(storage); // !! ineinander verschachtelte abfragen,  weil nur ganz innen alle daten fertig sind
-    });    
-    */
   }  
+
+
+  saveKanbanItem(newItem: BacklogItem) {
+    this.deleteKanbanItem(newItem); // falls es ein update ist löschen wir das original vorher um es verändert einzufügen
+    this.backlogItems.push(newItem); // Ins array mit dem neuen
+    this.writeStorage(); // Array ins storage
+  }
+
+  deleteKanbanItem (itemToDelete: BacklogItem) {
+    console.log("DelID: " + itemToDelete);
+    var idToDelete = itemToDelete.id;
+    this.backlogItems = this.backlogItems.filter(item => item !== itemToDelete); // 'rausoperieren'
+    this.writeStorage(); // Array ins storage  
+  }
+  
+  private writeStorage() { //schreibt das gesamte array neu ins storage
+    this.myStorage.set('kanbantodo', this.backlogItems).then(() => { //ab ins geheime storage
+      this.myStorage.length().then((val) => { 
+        console.log("StorageLength: " + val);
+      });
+    });
+  }
+
 
 
   //DUMMYdaten
@@ -136,12 +166,12 @@ export class KanbandataProvider {
     id: 0,
     title: 'Empty Item',
     description: '',
-    category: null,
+    category: Cat.SONSTIGES,
     dateDue: null,
     dateType: null,
-    priority: 1,
-    status: null,
-    weight: null,
+    priority: 0,
+    status: ItemStatus.LOGGED,
+    weight: ItemWeight.NORMAL,
     dateDone: null 
   } ;
 

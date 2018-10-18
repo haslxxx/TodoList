@@ -22,6 +22,8 @@ export class ContactPage {
   screenStyle = "landscape";
 
   constructor(public navCtrl: NavController, public myData: KanbandataProvider ,private screenOrientation: ScreenOrientation) {
+    // this.items = this.myData.getKanbanList(); // Daten laden  ... geht hier nicht
+    
     // --- initial SCREEN Orientation
     this.setScreenstyle();
     // detect orientation changes
@@ -82,12 +84,15 @@ export class ContactPage {
 
   itemDelete(item) {
     console.log("Entering itemDelete");
+    this.myData.deleteKanbanItem(item);
+    // Versuch die seite neu aufzubauen .. Klappt :-) Aber vorsicht (es killt alle navigationen davor, was in diesem fall nix ausmacht)
+    this.navCtrl.setRoot(this.navCtrl.getActive().component);  
   }
 
   newClicked() {
     console.log("Entering newClicked");
     this.newItem = this.myData.getEmptyItem();
-    this.newItem.title = "Please Enter New Item";
+    this.newItem.title = ">> Please Enter New Item <<";
 
     this.navCtrl.push(ItemDetailsPage, {
       item: this.newItem
