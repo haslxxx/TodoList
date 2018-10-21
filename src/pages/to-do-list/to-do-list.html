@@ -15,6 +15,45 @@
 
 <ion-content padding>
   <p>
-    Hier Entsteht Die TODO Liste
+    Wenn Du den Punkt erledigt hast dann HAKE IHN AB
+    <ion-icon name="checkmark-circle-outline" color="secondary"></ion-icon>
   </p>
+  <p>
+    Wenn Du den Punkt heute nicht erledigen willst, dann SCHIEBE IHN ZURÜCK 
+    <ion-icon name="arrow-dropleft" color="danger"></ion-icon>
+  </p>
+  <p>
+
+  </p>
+  <ion-list>
+    <ion-item-sliding *ngFor="let item of todoItems" >
+      <ion-item text-wrap>
+        <ion-row>
+          <ion-col col-12 *ngIf="screenStyle !='landscape'"> {{item.title}} </ion-col>
+          <ion-col col-6 *ngIf="screenStyle =='landscape'"> {{item.title}} </ion-col>
+          
+          <ion-col col-2 *ngIf="screenStyle =='landscape'">{{item.id}}</ion-col>
+          <ion-col col-2 *ngIf="screenStyle =='landscape'">{{item.priority}}</ion-col>
+          <ion-col col-2 *ngIf="screenStyle =='landscape'">{{item.category}}</ion-col>
+
+
+        </ion-row>
+        <ion-icon item-end
+            name="ios-arrow-dropleft-outline"
+            color="icon-slide">
+        </ion-icon>
+      </ion-item>
+      <ion-item-options side="right">
+        <button ion-button icon-only color="secondary" (click)="doneClicked(item)">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </button>
+        <button ion-button icon-only color="danger" (click)="postponeClicked(item)">
+          <ion-icon name="arrow-dropleft"></ion-icon>
+        </button>
+     </ion-item-options>
+    </ion-item-sliding>
+
+
+
+  </ion-list>
 </ion-content>

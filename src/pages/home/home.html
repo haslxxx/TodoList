@@ -3,22 +3,29 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Home</ion-title>
+    <ion-title><h3>KanbanTODO</h3></ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <h3>KanbanTODO</h3>
 
   <p>
-    Die TODO list besteht nur aus 2 boards. 
+    Dieses <strong><i>Mini-Kanban</i></strong> besteht nur aus <strong><i>2 Boards</i></strong>. 
+  </p>
+  <div>.</div>
+  <p>
+      Im <strong><i>Backlog</i></strong> werden alle Aufgaben erfasst, priorisiert und kategorisiert. 
   </p>
   <p>
-      Im 'backlog' werden alle Aufgaben erfasst, priorisiert und kategorisiert. 
+      In der <strong><i>ToDo</i></strong> -list sind pro Tag nur maximal X Aufgaben (aus dem Backlog). 
   </p>
+  <div> .</div>
   <p>
-      In der 'ToDo-list' sind pro Tag nur maximal X Aufgaben (aus dem backlog). Sind alle erledigt, ist der Tagesplan abgeschlossen :-)
+    Sind alle Aufgaben erledigt, ist der Tagesplan abgeschlossen 
+    <ion-icon name="thumbs-up" color="secondary"></ion-icon>
   </p>
+
   
-  
+  <pre>{{userDoc | json | async}}</pre>
+   
 </ion-content>

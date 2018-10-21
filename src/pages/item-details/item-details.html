@@ -26,10 +26,6 @@
 
 <ion-content padding>
   <ion-item>
-      <ion-label color="primary" type="text" floating >ID</ion-label>
-      <ion-input [(ngModel)]  ="selectedItem.id"></ion-input>
-  </ion-item>
-  <ion-item>
       <ion-label color="primary" type="text" floating >Titel</ion-label>
       <ion-input [(ngModel)]  ="selectedItem.title"></ion-input>
   </ion-item>
@@ -39,7 +35,7 @@
   </ion-item>
   <ion-item>
       <ion-label color="primary" type="text" floating>Priorität</ion-label>
-      <ion-input [(ngModel)]  ="selectedItem.priority"></ion-input>
+      <ion-input type="number" [(ngModel)]  ="selectedItem.priority"></ion-input>
   </ion-item>
   <ion-item>
       <ion-label color="primary">Kategorie</ion-label>
@@ -83,6 +79,10 @@
       <ion-datetime displayFormat="DD.MM.YYYY" [(ngModel)]  ="selectedItem.dateDone"></ion-datetime>
   </ion-item>
 
+  <ion-item>
+    <ion-label color="primary" type="text" >ID:</ion-label>
+    <ion-input  readonly="true" [(ngModel)]  ="selectedItem.id"></ion-input>
+  </ion-item>
 
 
 

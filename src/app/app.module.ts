@@ -15,11 +15,29 @@ import { ItemDetailsPage } from '../pages/item-details/item-details';
 
 //Daten
 import { IonicStorageModule } from '@ionic/storage'; //STORAGE hält die daten lokal, die mit firestore synchronisiert werden
-import { KanbandataProvider } from '../providers/kanbandata/kanbandata';
+import { KanbandataProvider, CatString } from '../providers/kanbandata/kanbandata';
 
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
-//import { CommonModule } from '@angular/common';
+// Goo Daten
+import { FirestorePage } from '../pages/firestore/firestore';
+ 
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireDatabaseModule, AngularFireDatabase } from '@angular/fire/database';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { FirebaseProvider } from '../providers/firebase/firebase';
+
+// Initialize Firebase  (Inhalte aus der FB konfig auf der FB seite kopiert   ...  die zugangsdaten zum Goo service über MEINEN account dort)
+export  const firebaseConfig = {
+  apiKey: "AIzaSyD2PfRu3hoXryEEvPEYw7VLr5o-0n9XHos",
+  authDomain: "kanbantodo.firebaseapp.com",
+  databaseURL: "https://kanbantodo.firebaseio.com",
+  projectId: "kanbantodo",
+  storageBucket: "kanbantodo.appspot.com",
+  messagingSenderId: "911378615179"
+};
+
 
 
 @NgModule({
@@ -30,13 +48,17 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation';
     HomePage,
     TabsPage,
     ItemDetailsPage,
-    ToDoListPage
+    ToDoListPage,
+    FirestorePage
   ],
   imports: [
     BrowserModule,
-    //CommonModule,  //ngIf etc   ... nutzt aber nix :-(
     IonicModule.forRoot(MyApp),
-    IonicStorageModule.forRoot()  //STORAGE
+    IonicStorageModule.forRoot(), //STORAGE
+    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireDatabaseModule,
+    AngularFireAuthModule //,
+    //AngularFirestoreModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -46,14 +68,19 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation';
     HomePage,
     TabsPage,
     ToDoListPage,
-    ItemDetailsPage
+    ItemDetailsPage,
+    FirestorePage
   ],
   providers: [
     StatusBar,
     SplashScreen,
     ScreenOrientation,
+    AngularFireDatabase,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    KanbandataProvider
+    KanbandataProvider,
+    FirebaseProvider,
+    AngularFirestore,
+    CatString
   ]
 })
 export class AppModule {}

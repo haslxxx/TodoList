@@ -11,22 +11,24 @@ Hier werden die daten bereitgestellt.
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';   //STORAGE
 
+import  _ from 'underscore';                //_.findWhere  etc.
+import { FirestorePage } from '../../pages/firestore/firestore';
 
-
-/*
-  Generated class for the KanbandataProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 
 // Innerhalb der klasse mag er keine enums  ... das mit dem export scheint ein nötiger trick zu sein
-export enum Cat {HAUS_GARTEN, UNI, FREIZEIT, ADMIN, SONSTIGES}  //Kategorie des BacklogItems ... ERWEITERBAR
+export enum Cat {HAUS_GARTEN, UNI, FREIZEIT, ADMIN, SONSTIGES}  // §§§§§§ Kategorie des BacklogItems ... ERWEITERBAR
 export enum DatTyp {FIX, SCHED}  // Harter termin oder locker geplant
 export enum ItemStatus {LOGGED, TODO, DONE}
 export enum ItemWeight {EASY, NORMAL, HEAVY}
 
-export class BacklogItem {
+export class CatString { // für die anzeige in Views .. weil der user so schlecht mit nummern umgeht
+  0: String = "HAUS"
+  1: String = "UNI"
+  2: String = "FREIZEIT"
+  3: String = "ADMIN"
+  4: String = "SONSTIG"
+}
+export interface BacklogItem {  //statt interface könnte man auch class schreiben
     id: number;
     title: string;
     description: string;
@@ -40,11 +42,15 @@ export class BacklogItem {
 }
 
 
+
 @Injectable()
 export class KanbandataProvider {
 
   backlogItems: Array<BacklogItem>;
   myStorage:Storage;
+
+  //3.)  versuche
+  
 
   constructor(private storage: Storage) {
       console.log('Hello KanbandataProvider Provider');
@@ -54,6 +60,8 @@ export class KanbandataProvider {
       this.myStorage = storage; //Storageobjekt speichern
       this.restoreItems();
 
+      // 3.)
+     
   }
 
   getKanbanList() {
@@ -62,19 +70,10 @@ export class KanbandataProvider {
   }
 
 
-  /*
-  getNextId() { // durchsucht die gesamte itemsList und findet den höchsten wert für ID
-    var maxIdObject;
-    console.log("GetNextId");
-    maxIdObject = _.max(this.itemsList, function(activity){return activity.id;} );
-    var newId =  maxIdObject.id + 1 ;
 
-    console.log(newId);
-    return newId;
-  }
-*/
   // 2.) ############## Local STORAGE 
   restoreItems() {
+    //this.downloadReady = false;
     this.myStorage.length().then((val) => { 
       console.log("StorageLength");
       console.log(val);    
@@ -88,25 +87,36 @@ export class KanbandataProvider {
             this.myStorage.set('kanbantodo', this.backlogItemsMock); // Wenn leer dann mit Dummydaten füllen
           } else {
             console.log("Found Kanban data"); // HURRA Daten sind vorhanden
-            this.backlogItems = val1;  // Ins lokale anzeigeArray für die ListenView damit !
-            
+//            this.backlogItems = _.sortBy(val1, 'category');
+//            this.backlogItems = _.sortBy(val1, function(itemX){return <number>itemX.priority*1;});
+            this.backlogItems = _.sortBy(val1, function(itemX){return parseInt(itemX.priority);});
+//            this.backlogItems = val1;  // Ins lokale anzeigeArray für die ListenView damit !
+            //this.downloadReady = true;   
           }
         });   
       };
     });  
   }  
 
-
+  /*
+  isDownloadReady() {
+    return this.downloadReady;
+  }
+*/
   saveKanbanItem(newItem: BacklogItem) {
     this.deleteKanbanItem(newItem); // falls es ein update ist löschen wir das original vorher um es verändert einzufügen
     this.backlogItems.push(newItem); // Ins array mit dem neuen
+
+    this.sortList(); // nach Priority sortieren
     this.writeStorage(); // Array ins storage
+    //3.)
+    //this.fsp.writeOneItem(newItem);
   }
 
   deleteKanbanItem (itemToDelete: BacklogItem) {
     console.log("DelID: " + itemToDelete);
-    var idToDelete = itemToDelete.id;
-    this.backlogItems = this.backlogItems.filter(item => item !== itemToDelete); // 'rausoperieren'
+    //var idToDelete = itemToDelete.id; // brauchmagarnicht, das Objekt selber ist ihm genug :-)
+    this.backlogItems = this.backlogItems.filter(item => item !== itemToDelete); // item 'rausoperieren'
     this.writeStorage(); // Array ins storage  
   }
   
@@ -118,6 +128,33 @@ export class KanbandataProvider {
     });
   }
 
+  
+  getNextId() { // durchsucht die gesamte itemsList und findet den höchsten wert für ID
+    var maxIdItem = _.max(this.backlogItems, function(itemX){return itemX.id * 1;} );
+    var newId =  maxIdItem.id; // Geht nicht in einem, sonst würde die id des gefundenen objektes erhöht werden
+    newId++;
+    console.log("GetNextId: " + newId);
+    return newId;
+  }
+
+  getNextPriority() { // durchsucht die gesamte itemsList und findet den höchsten wert für Priority
+    var maxIdItem = _.max(this.backlogItems, function(itemX){return <number>itemX.priority * 1;} );
+    var newPri = <number> maxIdItem.priority; // Geht nicht in einem, sonst würde die id des gefundenen objektes erhöht werden
+    newPri++;
+    console.log("GetNextPriority: " + newPri);
+    return newPri;
+  }
+
+  private sortList() {
+//    var sortedItems = _.sortBy(this.backlogItems, 'priority'); // fasst den inhalt von "priority" leider als string auf
+  //  var sortedItems: Array <BacklogItem> = _.sortBy(this.backlogItems, function(itemX){return <number>itemX.priority * 1;});
+    // DAS  *1 ist die rettung  ... da wird dann endlich eine zahl draus  ... scheiß JS
+    var sortedItems: Array <BacklogItem> = 
+      _.sortBy(this.backlogItems, function(itemX){return parseInt(itemX.priority);}); // Die eleganteste methode
+
+
+    this.backlogItems = sortedItems;
+  }
 
 
   //DUMMYdaten
