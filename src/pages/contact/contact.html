@@ -11,12 +11,14 @@
         </ion-col>
       </ion-row>
     </ion-grid>  
+    
   </ion-navbar>
 </ion-header>
 
 
 <!--   NEU -->
 <ion-content class="background-contents" padding>
+  <ion-searchbar (ionInput)="searchItems($event)"></ion-searchbar>
   <ion-list>
     <ion-item-sliding *ngFor="let item of items" (click)="itemSelected($event, item)" >
       <ion-item text-wrap>

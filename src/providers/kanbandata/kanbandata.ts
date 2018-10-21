@@ -12,7 +12,7 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';   //STORAGE
 
 import  _ from 'underscore';                //_.findWhere  etc.
-import { FirestorePage } from '../../pages/firestore/firestore';
+//import { FirestorePage } from '../../pages/firestore/firestore';
 
 
 // Innerhalb der klasse mag er keine enums  ... das mit dem export scheint ein nötiger trick zu sein

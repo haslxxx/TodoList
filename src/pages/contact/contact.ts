@@ -113,6 +113,11 @@ export class ContactPage {
     */
   }
 
+  // #############  SUCHE
+  searchItems($event) {
+    //####################### TODO
+  }
+
 
   itemToMove: BacklogItem;
   itemToMOveInFront: BacklogItem;
@@ -121,7 +126,7 @@ export class ContactPage {
   itemChangePriority(item) {
     if(this.itemToMove == null) { // erstes Item noch nicht ausgewählt
       this.itemToMove = item;
-      this.moveInsert = "MOVE INITIATED"
+      this.moveInsert = "MOVE: Ziel wählen"
     } else { // zweites Item ausgewählt --> verschieben (i.e. Priorität ändern)
       this.itemToMOveInFront = item;
       this.itemToMove.priority = this.itemToMOveInFront.priority;
