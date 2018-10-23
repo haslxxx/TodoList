@@ -14,6 +14,10 @@ import { Storage } from '@ionic/storage';   //STORAGE
 import  _ from 'underscore';                //_.findWhere  etc.
 //import { FirestorePage } from '../../pages/firestore/firestore';
 
+// 3.)
+import { AngularFirestore, AngularFirestoreDocument, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+
 
 // Innerhalb der klasse mag er keine enums  ... das mit dem export scheint ein nötiger trick zu sein
 export enum Cat {HAUS_GARTEN, UNI, FREIZEIT, ADMIN, SONSTIGES}  // §§§§§§ Kategorie des BacklogItems ... ERWEITERBAR
@@ -46,13 +50,18 @@ export interface BacklogItem {  //statt interface könnte man auch class schreib
 @Injectable()
 export class KanbandataProvider {
 
-  backlogItems: Array<BacklogItem>;
+  backlogItems: Array<BacklogItem>; // HIER sind alle LOKALEN Daten
+  // 2.)
   myStorage:Storage;
+  // 3.)  
+  afs: AngularFirestore;
+  itemsCollection: AngularFirestoreCollection<BacklogItem> ;
+  items: Observable<BacklogItem[]>;
 
-  //3.)  versuche
-  
 
-  constructor(private storage: Storage) {
+  constructor(
+    private storage: Storage, 
+    private afstore: AngularFirestore) {
       console.log('Hello KanbandataProvider Provider');
       // 1.)
       //this.makeListBacklogMock();  // Zuerst mit Mockdata arbeiten
@@ -61,11 +70,12 @@ export class KanbandataProvider {
       this.restoreItems();
 
       // 3.)
-     
+      this.afs = afstore; //firestore objekt speichern
+      this.itemsCollection  = this.afs.collection('mykanbanbacklog'); // Name der collection = wurzel der daten
   }
 
   getKanbanList() {
-    console.log('Hello KanbandataProvider/getKanbanList Provider');
+    console.log('Hello getKanbanList');
     return this.backlogItems;
   }
 
@@ -87,15 +97,15 @@ export class KanbandataProvider {
             this.myStorage.set('kanbantodo', this.backlogItemsMock); // Wenn leer dann mit Dummydaten füllen
           } else {
             console.log("Found Kanban data"); // HURRA Daten sind vorhanden
-//            this.backlogItems = _.sortBy(val1, 'category');
-//            this.backlogItems = _.sortBy(val1, function(itemX){return <number>itemX.priority*1;});
-            this.backlogItems = _.sortBy(val1, function(itemX){return parseInt(itemX.priority);});
-//            this.backlogItems = val1;  // Ins lokale anzeigeArray für die ListenView damit !
-            //this.downloadReady = true;   
-          }
+            // Daten vom LOCAL STORAGE nach priorität sortiert ins lokale ARRAY kopieren
+            this.updateBacklogItems(val1);
+            
+          } 
         });   
       };
     });  
+
+    //this.subscribeFirestoreCollection(); // Geht HIER nicht, weil Firestore Objekt zum Zeitpunkt noch nicht existiert
   }  
 
   /*
@@ -108,27 +118,77 @@ export class KanbandataProvider {
     this.backlogItems.push(newItem); // Ins array mit dem neuen
 
     this.sortList(); // nach Priority sortieren
-    this.writeStorage(); // Array ins storage
+    this.pushStorage(); // Array ins storage
     //3.)
-    //this.fsp.writeOneItem(newItem);
+    this.pushFirestore();
   }
 
   deleteKanbanItem (itemToDelete: BacklogItem) {
     console.log("DelID: " + itemToDelete);
     //var idToDelete = itemToDelete.id; // brauchmagarnicht, das Objekt selber ist ihm genug :-)
     this.backlogItems = this.backlogItems.filter(item => item !== itemToDelete); // item 'rausoperieren'
-    this.writeStorage(); // Array ins storage  
+    // 2.)
+    this.pushStorage(); // bereinigtes Array ins storage  
+    // 3.)
+    this.deleteFirestoreItem(itemToDelete); // UND im FS löschen
   }
   
-  private writeStorage() { //schreibt das gesamte array neu ins storage
+
+  // 2.) local  STORAGE ZUGRIFF
+  private pushStorage() { //schreibt das gesamte array neu ins storage
     this.myStorage.set('kanbantodo', this.backlogItems).then(() => { //ab ins geheime storage
       this.myStorage.length().then((val) => { 
-        console.log("StorageLength: " + val);
+        console.log("local Storage updated");
       });
     });
   }
 
-  
+
+  // 3.) FIRESTORE ZUGRIFF
+  writeFirestoreItem(itemToWrite: BacklogItem){  // speichert ein eizelnes item in firestore
+    var id = String(itemToWrite.id);
+    var setDoc = this.afs.collection('mykanbanbacklog').doc(id).set(itemToWrite);
+  }
+
+  private pushFirestore(){  // speichert alle items in firestore   ACHTUNG: alte IDs bleiben DORT erhalten 
+    this.backlogItems.forEach(item => {
+      this.writeFirestoreItem(item);
+    });
+  }
+
+ 
+  subscribeFirestoreItem(itemId) {
+    var item = this.afs
+      .doc<BacklogItem>('/mykanbanbacklog/' + itemId)
+      .valueChanges()
+      .subscribe(result=>{ // Hier steht nun was zu tun ist , wanimmer sich die daten draußen im store ändern
+        console.log("FBitem: " + result.id + "  " + result.description);  
+      });    ; 
+  }
+
+  subscribeFirestoreCollection() {
+    this.itemsCollection
+      .valueChanges()
+      // !!!!!!!!!!! FIRESTORE COLLECTION CALLBACK (promise)
+      .subscribe(firestoreData=>{ // Hier steht nun was zu tun ist , wannimmer sich die daten draußen im store ändern
+        if (firestoreData.length != 0) {
+          console.log("Got Firestore items");  
+          this.updateBacklogItems(firestoreData);
+        };       
+      });   
+  }
+
+  private updateBacklogItems(itemList: Array<BacklogItem>) { // schreibt den inhalt von Firestore und/oder Localstorage  ins lokale BacklogItems
+    this.backlogItems = _.sortBy(itemList, function(itemX){return parseInt(itemX.priority);});
+  };
+
+  private deleteFirestoreItem(itemToDelete: BacklogItem){
+    var id = String(itemToDelete.id);
+    var setDoc = this.afs.collection('mykanbanbacklog').doc(id).delete();
+  }
+
+
+ // ##############  UTILS
   getNextId() { // durchsucht die gesamte itemsList und findet den höchsten wert für ID
     var maxIdItem = _.max(this.backlogItems, function(itemX){return itemX.id * 1;} );
     var newId =  maxIdItem.id; // Geht nicht in einem, sonst würde die id des gefundenen objektes erhöht werden
@@ -151,8 +211,6 @@ export class KanbandataProvider {
     // DAS  *1 ist die rettung  ... da wird dann endlich eine zahl draus  ... scheiß JS
     var sortedItems: Array <BacklogItem> = 
       _.sortBy(this.backlogItems, function(itemX){return parseInt(itemX.priority);}); // Die eleganteste methode
-
-
     this.backlogItems = sortedItems;
   }
 

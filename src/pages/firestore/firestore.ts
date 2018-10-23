@@ -35,12 +35,13 @@ export class FirestorePage {
 
     //VERSUCHE
     this.getOneItem();
-    this.writeEmptyItem();
   }
 
 
   writeClicked() {
-    this.writeEmptyItem();
+    //this.writeEmptyItem();
+    this.myData.subscribeFirestoreItem(16); // the movie
+    this.myData.subscribeFirestoreCollection();
   }
 
   update(item: ItemInterface) {
