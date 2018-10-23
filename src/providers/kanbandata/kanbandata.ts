@@ -12,11 +12,12 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';   //STORAGE
 
 import  _ from 'underscore';                //_.findWhere  etc.
-//import { FirestorePage } from '../../pages/firestore/firestore';
 
 // 3.)
 import { AngularFirestore, AngularFirestoreDocument, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+
+import { ToastController, ToastOptions } from 'ionic-angular'
 
 
 // Innerhalb der klasse mag er keine enums  ... das mit dem export scheint ein nötiger trick zu sein
@@ -58,10 +59,14 @@ export class KanbandataProvider {
   itemsCollection: AngularFirestoreCollection<BacklogItem> ;
   items: Observable<BacklogItem[]>;
 
+  toastOptions: ToastOptions;
 
   constructor(
     private storage: Storage, 
-    private afstore: AngularFirestore) {
+    private afstore: AngularFirestore,
+    private toast: ToastController
+    ) {
+
       console.log('Hello KanbandataProvider Provider');
       // 1.)
       //this.makeListBacklogMock();  // Zuerst mit Mockdata arbeiten
@@ -72,6 +77,13 @@ export class KanbandataProvider {
       // 3.)
       this.afs = afstore; //firestore objekt speichern
       this.itemsCollection  = this.afs.collection('mykanbanbacklog'); // Name der collection = wurzel der daten
+
+      this.toastOptions = {
+        message: 'Externe Datenänderung !',
+        duration: 5000,
+        showCloseButton: true,
+        closeButtonText: 'Close'
+      }
   }
 
   getKanbanList() {
@@ -174,6 +186,7 @@ export class KanbandataProvider {
         if (firestoreData.length != 0) {
           console.log("Got Firestore items");  
           this.updateBacklogItems(firestoreData);
+          this.toast.create(this.toastOptions).present(); // Den user darüber aufklären (nachdem ich es zunächst nicht schaffe die anzeige zu aktualisieren)
         };       
       });   
   }

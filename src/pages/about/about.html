@@ -1,20 +1,42 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      About
+      HowTo
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
     <p>
-        Die TODO list besteht nur aus 2 boards. 
-      </p>
-      <p>
-          Im 'backlog' werden alle Aufgaben erfasst, priorisiert und kategorisiert. 
-      </p>
-      <p>
-          In der 'ToDo-list' sind pro Tag nur maximal X Aufgaben (aus dem backlog). Sind alle erledigt, ist der Tagesplan abgeschlossen :-)
-      </p>
+        Die Anwendung besteht nur aus 3 Ansichten. 
+    </p>
+    <p>
+        <strong>BACKLOG:</strong>  Zeigt alle erfassten Aufgaben an
+    </p>
+
+    <ion-item text-wrap>          
+        <ion-icon name="create">..Bearbeitung einer Aufgabe (siehe DETAILS)</ion-icon> 
+        <ion-icon name="walk">..Aufgabe in die ToDo Liste übernehmen (Tagesaufgaben)</ion-icon>
+        <ion-icon name="trash">..Aufgabe Löschen</ion-icon>
+        <ion-icon name="git-compare">..Aufgabe umpriorisieren. Erster click wählt Aufgabe aus -- 2ter click wählt Aufgabe aus VOR die gereiht werden soll</ion-icon>
+    </ion-item>
+
+    <p>
+        <strong>DETAILS:</strong>  Neuanlage oder Bearbeitung einer vorhandener Aufgabe
+    </p>
+    <ion-item text-wrap>
+        Save:  Speichert die Änderungen
+        Abort: Bricht die Aktion ab
+    </ion-item>
+
+
+    <p>
+        <strong>TODO:</strong>  Hier scheinen alle Aufgabe auf, die im Backlog mit 
+        <ion-icon name="walk"></ion-icon> markiert wurden
+    </p>
+    <ion-item text-wrap>          
+        <ion-icon name="checkmark-circle-outline">..Aufgabe als ERLEDIGT markieren</ion-icon>
+        <ion-icon name="arrow-dropleft">..Aufgabe zurück ins Backlog schieben (quasi auf später verschieben)</ion-icon>
+    </ion-item>
     
 </ion-content>
