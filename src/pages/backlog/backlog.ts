@@ -13,8 +13,8 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation';
   templateUrl: 'backlog.html'
 })
 export class BacklogPage {
-  selectedItem: any;
-  items: Array <BacklogItem>;
+  selectedItem: any; // Backlogitem das in bearbeitung ist
+  items: Array <BacklogItem>; // Lokle kopie der Backlogitems
   newItem: BacklogItem;
 
   screenStyle = "landscape";
@@ -157,19 +157,35 @@ export class BacklogPage {
       this.moveInsert = "MOVE: Ziel wählen"
     } else { // zweites Item ausgewählt --> verschieben (i.e. Priorität ändern)
       this.itemToMOveInFront = item;
-      this.itemToMove.priority = this.itemToMOveInFront.priority;
-      if (this.itemToMove !== this.itemToMOveInFront) {
-        this.itemToMove.priority--; //2mal dasselbe angewählt
+      if (this.itemToMove !== this.itemToMOveInFront) { // wenn 2mal dasselbe angewählt .. quais abbruch
+        this.shiftPriorities(this.itemToMOveInFront, this.itemToMove);
       };
-      // ############### TODO Wasnochfehlt ... zurückschieben aller dahinter liegenden prioritäten (i.e. +1 bis zu einem loch)
-
       // Move erledigt !  --> Aufräumen
-      this.myData.saveKanbanItem(item); // in die datenbasis zurückschreiben
       this.moveInsert = "";
       this.itemToMove = null;
       // Versuch die seite neu aufzubauen .. Klappt :-) Aber vorsicht (es killt alle navigationen davor, was in diesem fall nix ausmacht)
       this.navCtrl.setRoot(this.navCtrl.getActive().component);  
     }
+  }
+
+  shiftPriorities(itemBehind: BacklogItem, itemMoved: BacklogItem) { //Verschiebt die einträge für priority (+1) wenn ein item vorgereiht wurde
+    var priorityBehind = itemBehind.priority;
+    this.items.map((item) => {
+      if(item.priority >= priorityBehind) {
+        item.priority++; // alle ab und incl dem item vor das zu verschieben ist eins nach hinten
+      }
+    });
+    itemMoved.priority = priorityBehind;    
+    //this.tidyPriorities(); // EINMALIGE ORDNUNGSFUNKTION -->  
+    this.myData.saveKanbanItem(itemMoved); //ALT  das moved itemin die datenbasis zurückschreiben
+  }
+
+  tidyPriorities() { //eine durchgehende lückenlose zahlenreihe für "priority"
+    var itemNo = 1;
+    this.items.forEach(element => {
+      element.priority = itemNo;
+      itemNo++;      
+    });
   }
 
 }
