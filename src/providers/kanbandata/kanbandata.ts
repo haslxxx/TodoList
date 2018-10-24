@@ -14,7 +14,7 @@ import { Storage } from '@ionic/storage';   //STORAGE
 import  _ from 'underscore';                //_.findWhere  etc.
 
 // 3.)
-import { AngularFirestore, AngularFirestoreDocument, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { AngularFirestore,  AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
 import { ToastController, ToastOptions } from 'ionic-angular'
@@ -60,6 +60,7 @@ export class KanbandataProvider {
   items: Observable<BacklogItem[]>;
 
   toastOptions: ToastOptions;
+  fsPushInitiated: boolean = true;
 
   constructor(
     private storage: Storage, 
@@ -91,8 +92,6 @@ export class KanbandataProvider {
     return this.backlogItems;
   }
 
-
-
   // 2.) ############## Local STORAGE 
   restoreItems() {
     //this.downloadReady = false;
@@ -108,7 +107,7 @@ export class KanbandataProvider {
             console.log("No Kanban data");
             this.myStorage.set('kanbantodo', this.backlogItemsMock); // Wenn leer dann mit Dummydaten füllen
           } else {
-            console.log("Found Kanban data"); // HURRA Daten sind vorhanden
+            console.log("Found Local Kanban data"); // HURRA Daten sind vorhanden
             // Daten vom LOCAL STORAGE nach priorität sortiert ins lokale ARRAY kopieren
             this.updateBacklogItems(val1);
             
@@ -157,19 +156,21 @@ export class KanbandataProvider {
 
 
   // 3.) FIRESTORE ZUGRIFF
-  writeFirestoreItem(itemToWrite: BacklogItem){  // speichert ein eizelnes item in firestore
+  private writeFirestoreItem(itemToWrite: BacklogItem){  // speichert ein eizelnes item in firestore
+    this.fsPushInitiated = true; // Verhindert, daß das callback den toast zeigt
     var id = String(itemToWrite.id);
     var setDoc = this.afs.collection('mykanbanbacklog').doc(id).set(itemToWrite);
   }
 
   private pushFirestore(){  // speichert alle items in firestore   ACHTUNG: alte IDs bleiben DORT erhalten 
+    this.fsPushInitiated = true; // Verhindert, daß das callback den toast zeigt
     this.backlogItems.forEach(item => {
       this.writeFirestoreItem(item);
     });
   }
 
  
-  subscribeFirestoreItem(itemId) {
+  UNUSEDsubscribeFirestoreItem(itemId) {
     var item = this.afs
       .doc<BacklogItem>('/mykanbanbacklog/' + itemId)
       .valueChanges()
@@ -186,22 +187,29 @@ export class KanbandataProvider {
         if (firestoreData.length != 0) {
           console.log("Got Firestore items");  
           this.updateBacklogItems(firestoreData);
-          this.toast.create(this.toastOptions).present(); // Den user darüber aufklären (nachdem ich es zunächst nicht schaffe die anzeige zu aktualisieren)
+          if (this.fsPushInitiated == true) { // Wir waren es selber .. keine notification an den user !
+             this.fsPushInitiated = false;
+          } else {
+            console.log("Toast");
+            this.toast.create(this.toastOptions).present(); // Den user darüber aufklären (nachdem ich es zunächst nicht schaffe die anzeige zu aktualisieren)
+          }
         };       
       });   
   }
 
-  private updateBacklogItems(itemList: Array<BacklogItem>) { // schreibt den inhalt von Firestore und/oder Localstorage  ins lokale BacklogItems
-    this.backlogItems = _.sortBy(itemList, function(itemX){return parseInt(itemX.priority);});
-  };
 
   private deleteFirestoreItem(itemToDelete: BacklogItem){
+    this.fsPushInitiated = true; // Verhindert, daß das callback den toast zeigt
     var id = String(itemToDelete.id);
     var setDoc = this.afs.collection('mykanbanbacklog').doc(id).delete();
   }
 
 
  // ##############  UTILS
+  private updateBacklogItems(itemList: Array<BacklogItem>) { // schreibt den inhalt von Firestore und/oder Localstorage  ins lokale BacklogItems
+    this.backlogItems = _.sortBy(itemList, function(itemX){return parseInt(itemX.priority);});
+  };
+
   getNextId() { // durchsucht die gesamte itemsList und findet den höchsten wert für ID
     var maxIdItem = _.max(this.backlogItems, function(itemX){return itemX.id * 1;} );
     var newId =  maxIdItem.id; // Geht nicht in einem, sonst würde die id des gefundenen objektes erhöht werden

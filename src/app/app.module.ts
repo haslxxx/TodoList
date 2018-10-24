@@ -1,10 +1,10 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { IonicApp, IonicModule, IonicErrorHandler, NavController } from 'ionic-angular';
+import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
 import { AboutPage } from '../pages/about/about';
-import { ContactPage } from '../pages/contact/contact';
+import { BacklogPage } from '../pages/backlog/backlog';
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 
@@ -20,13 +20,13 @@ import { KanbandataProvider, CatString } from '../providers/kanbandata/kanbandat
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
 // Goo Daten
-import { FirestorePage } from '../pages/firestore/firestore';
+//import { FirestorePage } from '../pages/firestore/firestore';
  
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule, AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
-import { FirebaseProvider } from '../providers/firebase/firebase';
+import { AngularFirestore } from '@angular/fire/firestore';
+//import { FirebaseProvider } from '../providers/firebase/firebase';
 
 // Initialize Firebase  (Inhalte aus der FB konfig auf der FB seite kopiert   ...  die zugangsdaten zum Goo service über MEINEN account dort)
 export  const firebaseConfig = {
@@ -44,12 +44,12 @@ export  const firebaseConfig = {
   declarations: [
     MyApp,
     AboutPage,
-    ContactPage,
+    BacklogPage,
     HomePage,
     TabsPage,
     ItemDetailsPage,
-    ToDoListPage,
-    FirestorePage
+    ToDoListPage //,
+    //FirestorePage
   ],
   imports: [
     BrowserModule,
@@ -63,12 +63,12 @@ export  const firebaseConfig = {
   entryComponents: [
     MyApp,
     AboutPage,
-    ContactPage,
+    BacklogPage,
     HomePage,
     TabsPage,
     ToDoListPage,
-    ItemDetailsPage,
-    FirestorePage
+    ItemDetailsPage //,
+    // FirestorePage
   ],
   providers: [
     StatusBar,
@@ -77,10 +77,9 @@ export  const firebaseConfig = {
     AngularFireDatabase,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     KanbandataProvider,
-    FirebaseProvider,
+    //FirebaseProvider,
     AngularFirestore,
-    CatString
-
+    CatString //Mühsame zurückverwandlung eines enum in einen text
   ]
 })
 export class AppModule {}

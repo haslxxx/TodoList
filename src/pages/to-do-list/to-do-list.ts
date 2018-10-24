@@ -1,15 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { KanbandataProvider, BacklogItem , ItemStatus} from '../../providers/kanbandata/kanbandata';
-// Alles für's datum
-import { DatePipe } from '@angular/common'
-
-/**
- * Generated class for the ToDoListPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -30,7 +21,6 @@ export class ToDoListPage {
 
   ionViewWillEnter() {  //Gefilterte Backlogtabelle nach  Status == TODO
     this.todoItems = this.myData.getKanbanList().filter(item => item.status == ItemStatus.TODO);
-    //this.todoItems = this.todoItems.filter(item => item.status == ItemStatus.TODO);
   }
 
   postponeClicked(item) { // Punkt aus der ToDo liste wieder zurück ins Backlog

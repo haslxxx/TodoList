@@ -4,13 +4,28 @@
       <ion-row>
         <ion-col col-6>
             <ion-title id="list-title">Backlog List</ion-title>
+            <ion-searchbar (ionInput)="onSearch($event)"></ion-searchbar>
         </ion-col>      
-        <ion-col col-4>{{moveInsert}} </ion-col>    
+        <ion-col col-4>
+          {{moveInsert}} 
+
+          <ion-item>
+            <!-- <ion-label>Filter</ion-label> -->
+            <ion-select [(ngModel)]="displayFilter" (ngModelChange)="filterChange($event)">
+              <ion-option value="log" selected="true">Logged</ion-option>
+              <ion-option value="todo">ToDo</ion-option>
+              <ion-option value="all">All</ion-option>
+              <ion-option value="done">Done</ion-option>
+            </ion-select>
+          </ion-item>
+            
+        </ion-col>    
         <ion-col col-1>
             <button ion-fab mini color="secondary" (click)="newClicked()">+</button>
         </ion-col>
       </ion-row>
     </ion-grid>  
+    
     
   </ion-navbar>
 </ion-header>
@@ -18,7 +33,7 @@
 
 <!--   NEU -->
 <ion-content class="background-contents" padding>
-  <ion-searchbar (ionInput)="searchItems($event)"></ion-searchbar>
+  
   <ion-list>
     <ion-item-sliding *ngFor="let item of items" (click)="itemSelected($event, item)" >
       <ion-item text-wrap>
@@ -26,9 +41,6 @@
           <ion-col col-12 *ngIf="screenStyle !='landscape'"> {{item.title}} </ion-col>
 
           <ion-col col-6 *ngIf="screenStyle =='landscape'"> {{item.title}} </ion-col>          
-<!--
-          <ion-col col-2 *ngIf="screenStyle =='landscape'">{{item.id}}</ion-col>
--->
           <ion-col col-2 *ngIf="screenStyle =='landscape'">{{item.priority}}</ion-col>
           <ion-col col-2 *ngIf="screenStyle =='landscape'">
               <p *ngIf="item.category =='0'">{{catString[0]}}</p>
@@ -37,7 +49,7 @@
               <p *ngIf="item.category =='3'">{{catString[3]}}</p>
               <p *ngIf="item.category =='4'">{{catString[4]}}</p>            
           </ion-col>
-
+          <ion-col col-2 *ngIf="screenStyle =='landscape' && displayFilter == 'all'">{{item.status}}</ion-col>
 
         </ion-row>
         <ion-icon item-end

@@ -1,25 +1,24 @@
-// IST EIGENTLICH DIE BACKLOG LISTE ... obwohl sie noch "Contacts" heisst!!!
-
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { ItemDetailsPage } from '../item-details/item-details';
 
 //Data
 import { KanbandataProvider, BacklogItem, ItemStatus, CatString } from '../../providers/kanbandata/kanbandata';
-
+// Portrait / Landscape 
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
 
 @Component({
   selector: 'page-contact',
-  templateUrl: 'contact.html'
+  templateUrl: 'backlog.html'
 })
-export class ContactPage {
+export class BacklogPage {
   selectedItem: any;
   items: Array <BacklogItem>;
   newItem: BacklogItem;
 
   screenStyle = "landscape";
+  displayFilter = "log"; // Was wollen wir anzeigen
 
   constructor(
     public navCtrl: NavController, 
@@ -39,22 +38,42 @@ export class ContactPage {
           // TODO  Hier wird alles aufgerufen was durch eine neuorientierung geändert werden muss
           }  
     );
+
+    
   }
 
   //############### LIFECYCLE callbacks  systemcallback von IONIC!
   ionViewWillEnter() { 
     console.log("Entering Backlog ListView");
     // --- Fetch Data
-    this.items = this.myData.getKanbanList();
+    this.getFilteredKanbanList();
     // while (this.myData.isDownloadReady() != true) {}; // Warteschleife bis daten geladen sind   --- GEHT NICHT
   }
 
-  ionViewWillLeave() {
-
-  }
-
-  ionViewDidLoad () {
-
+  private getFilteredKanbanList() {
+    console.log("DisplayFILTER: " + this.displayFilter); // Über data binding mit wert im html verbunden
+    switch(this.displayFilter) { 
+      case "log": { 
+        this.items = this.myData.getKanbanList().filter(item => item.status == ItemStatus.LOGGED); 
+        break; 
+      } 
+      case "todo": { 
+        this.items = this.myData.getKanbanList().filter(item => item.status == ItemStatus.TODO); 
+        break; 
+      } 
+      case "all": {
+        this.items = this.myData.getKanbanList();  
+        break;    
+      } 
+      case "done": { 
+        this.items = this.myData.getKanbanList().filter(item => item.status == ItemStatus.DONE);
+        break; 
+      }  
+      default: { 
+        this.items = this.myData.getKanbanList(); 
+        break;              
+      } 
+    }        
   }
 
   //################# Orientation
@@ -114,10 +133,19 @@ export class ContactPage {
   }
 
   // #############  SUCHE
-  searchItems($event) {
-    //####################### TODO
+  onSearch(ev: any) {
+    this.getFilteredKanbanList();    //Ganze liste herstellen
+    const val = ev.target.value; //Suchstring aus der searchbar   
+    if (val && val.trim() != '') { // Wenn suchstring leer .. nix filtern
+      this.items = this.items.filter((item) => {
+        return (item.title.toLowerCase().indexOf(val.toLowerCase()) > -1);
+      })
+    }
   }
 
+  filterChange(event) { // User hat anderes displayfilter gewählt
+    this.getFilteredKanbanList();
+  }
 
   itemToMove: BacklogItem;
   itemToMOveInFront: BacklogItem;
@@ -135,7 +163,7 @@ export class ContactPage {
       };
       // ############### TODO Wasnochfehlt ... zurückschieben aller dahinter liegenden prioritäten (i.e. +1 bis zu einem loch)
 
-      // Erledigt !  --> Aufräumen
+      // Move erledigt !  --> Aufräumen
       this.myData.saveKanbanItem(item); // in die datenbasis zurückschreiben
       this.moveInsert = "";
       this.itemToMove = null;
@@ -143,13 +171,5 @@ export class ContactPage {
       this.navCtrl.setRoot(this.navCtrl.getActive().component);  
     }
   }
-
-
-
-
-
-
-
-
 
 }
