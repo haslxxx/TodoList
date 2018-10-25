@@ -2,12 +2,13 @@
   <ion-navbar>
     <ion-grid>
       <ion-row>
-        <ion-col col-6>
-            <ion-title id="list-title">Backlog List</ion-title>
-            <ion-searchbar (ionInput)="onSearch($event)"></ion-searchbar>
-        </ion-col>      
         <ion-col col-4>
-          {{moveInsert}} 
+            <ion-title id="list-title">Backlog List</ion-title>
+            <p ion-text color="danger"><strong >{{moveInsert}} </strong> </p>
+        </ion-col>   
+ 
+        <ion-col>
+         
 
           <ion-item>
             <!-- <ion-label>Filter</ion-label> -->
@@ -23,6 +24,7 @@
         <ion-col col-1>
             <button ion-fab mini color="secondary" (click)="newClicked()">+</button>
         </ion-col>
+        <ion-col col-1></ion-col>
       </ion-row>
     </ion-grid>  
     
@@ -35,6 +37,7 @@
 <ion-content class="background-contents" padding>
   
   <ion-list>
+    <ion-searchbar (ionInput)="onSearch($event)"></ion-searchbar>
     <ion-item-sliding *ngFor="let item of items" (click)="itemSelected($event, item)" >
       <ion-item text-wrap>
         <ion-row>

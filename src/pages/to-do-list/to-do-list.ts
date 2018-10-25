@@ -32,6 +32,7 @@ export class ToDoListPage {
 
   doneClicked(item) {  // Punkt ist erledigt -->  status auf "ERLEDIGT" ändern und Datum eintragen
     item.status =  ItemStatus.DONE;
+    item.priority = 1000;  // "Endlager"  weit hinten
     item.dateDone = new Date().toISOString();  // Aktuelles datum eintragen
     this.myData.saveKanbanItem(item); // in die datenbasis zurückschreiben
     this.navCtrl.setRoot(this.navCtrl.getActive().component); //frisch anzeigen

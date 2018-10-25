@@ -104,7 +104,7 @@ export class BacklogPage {
 
   itemDelete(item) {
     console.log("Entering itemDelete");
-    this.myData.deleteKanbanItem(item);
+    this.myData.deleteKanbanItem(item, false);
     // Versuch die seite neu aufzubauen .. Klappt :-) Aber vorsicht (es killt alle navigationen davor, was in diesem fall nix ausmacht)
     this.navCtrl.setRoot(this.navCtrl.getActive().component);  
   }
@@ -169,15 +169,20 @@ export class BacklogPage {
   }
 
   shiftPriorities(itemBehind: BacklogItem, itemMoved: BacklogItem) { //Verschiebt die einträge für priority (+1) wenn ein item vorgereiht wurde
+// ACHTUNG:  Diese funktion arbeitet auf der gefilterten liste zur anzeige in Backlog. Ausgefilterte items werden nicht berührt
     var priorityBehind = itemBehind.priority;
+    console.log("Priority Behind: " + priorityBehind) ;
     this.items.map((item) => {
       if(item.priority >= priorityBehind) {
+        console.log("Priority changed: " + item.priority) ;
         item.priority++; // alle ab und incl dem item vor das zu verschieben ist eins nach hinten
+        this.myData.saveKanbanItem(item);
       }
     });
     itemMoved.priority = priorityBehind;    
     //this.tidyPriorities(); // EINMALIGE ORDNUNGSFUNKTION -->  
     this.myData.saveKanbanItem(itemMoved); //ALT  das moved itemin die datenbasis zurückschreiben
+    // FEHLER !!!!!!!!!!!!!!!!!!!! ... NUN müssen ALLE geänderten zurückgeschrieben werden
   }
 
   tidyPriorities() { //eine durchgehende lückenlose zahlenreihe für "priority"

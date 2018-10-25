@@ -60,7 +60,7 @@ export class KanbandataProvider {
   items: Observable<BacklogItem[]>;
 
   toastOptions: ToastOptions;
-  fsPushInitiated: boolean = true;
+  fsPushInitiated: number = 1;
 
   constructor(
     private storage: Storage, 
@@ -125,23 +125,26 @@ export class KanbandataProvider {
   }
 */
   saveKanbanItem(newItem: BacklogItem) {
-    this.deleteKanbanItem(newItem); // falls es ein update ist löschen wir das original vorher um es verändert einzufügen
+    this.deleteKanbanItem(newItem, true); // falls es ein update ist löschen wir das original vorher um es verändert einzufügen
     this.backlogItems.push(newItem); // Ins array mit dem neuen
 
     this.sortList(); // nach Priority sortieren
     this.pushStorage(); // Array ins storage
     //3.)
-    this.pushFirestore();
+    //this.pushFirestore(); ---> Wir müssen bei FS nicht immer mit dem vollen geschäft reinfahren, da gleiche ID = schlüsssel nicht dupliziert wird
+    this.writeFirestoreItem(newItem);
   }
 
-  deleteKanbanItem (itemToDelete: BacklogItem) {
+  deleteKanbanItem (itemToDelete: BacklogItem, saveDelete: boolean) {
     console.log("DelID: " + itemToDelete);
     //var idToDelete = itemToDelete.id; // brauchmagarnicht, das Objekt selber ist ihm genug :-)
     this.backlogItems = this.backlogItems.filter(item => item !== itemToDelete); // item 'rausoperieren'
     // 2.)
     this.pushStorage(); // bereinigtes Array ins storage  
     // 3.)
-    this.deleteFirestoreItem(itemToDelete); // UND im FS löschen
+    if (!saveDelete) {
+      this.deleteFirestoreItem(itemToDelete); // UND im FS löschen, wenn wir nicht im delete wegen save sind (nur für Storage)
+    }
   }
   
 
@@ -157,16 +160,21 @@ export class KanbandataProvider {
 
   // 3.) FIRESTORE ZUGRIFF
   private writeFirestoreItem(itemToWrite: BacklogItem){  // speichert ein eizelnes item in firestore
-    this.fsPushInitiated = true; // Verhindert, daß das callback den toast zeigt
+    console.log("FirestoreItem written") ;
+    this.fsPushInitiated++; // Verhindert, daß das callback den toast zeigt
     var id = String(itemToWrite.id);
     var setDoc = this.afs.collection('mykanbanbacklog').doc(id).set(itemToWrite);
   }
 
   private pushFirestore(){  // speichert alle items in firestore   ACHTUNG: alte IDs bleiben DORT erhalten 
-    this.fsPushInitiated = true; // Verhindert, daß das callback den toast zeigt
-    this.backlogItems.forEach(item => {
+    this.fsPushInitiated++; // Verhindert, daß das callback den toast zeigt
+
+    this.itemsCollection.valueChanges();
+/*    
+    this.backlogItems.forEach(item => {  // Jedes item einzeln
       this.writeFirestoreItem(item);
     });
+*/
   }
 
  
@@ -187,8 +195,8 @@ export class KanbandataProvider {
         if (firestoreData.length != 0) {
           console.log("Got Firestore items");  
           this.updateBacklogItems(firestoreData);
-          if (this.fsPushInitiated == true) { // Wir waren es selber .. keine notification an den user !
-             this.fsPushInitiated = false;
+          if (this.fsPushInitiated > 0) { // Wir waren es selber .. keine notification an den user !
+             this.fsPushInitiated--;
           } else {
             console.log("Toast");
             this.toast.create(this.toastOptions).present(); // Den user darüber aufklären (nachdem ich es zunächst nicht schaffe die anzeige zu aktualisieren)
@@ -199,7 +207,8 @@ export class KanbandataProvider {
 
 
   private deleteFirestoreItem(itemToDelete: BacklogItem){
-    this.fsPushInitiated = true; // Verhindert, daß das callback den toast zeigt
+    console.log("FirestoreItem deleted") ;
+    this.fsPushInitiated++; // Verhindert, daß das callback den toast zeigt
     var id = String(itemToDelete.id);
     var setDoc = this.afs.collection('mykanbanbacklog').doc(id).delete();
   }
@@ -219,7 +228,14 @@ export class KanbandataProvider {
   }
 
   getNextPriority() { // durchsucht die gesamte itemsList und findet den höchsten wert für Priority
-    var maxIdItem = _.max(this.backlogItems, function(itemX){return <number>itemX.priority * 1;} );
+    var maxIdItem = _.max(this.backlogItems, function(itemX:BacklogItem){
+      if (itemX.status != ItemStatus.DONE) {
+        return <number>itemX.priority * 1;
+      } else {
+        return 0; // Für erledigte einträge uninteressanten wert zurückliefern, damit sie das MAX nicht stören
+      }       
+    });
+
     var newPri = <number> maxIdItem.priority; // Geht nicht in einem, sonst würde die id des gefundenen objektes erhöht werden
     newPri++;
     console.log("GetNextPriority: " + newPri);
