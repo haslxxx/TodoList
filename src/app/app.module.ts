@@ -28,6 +28,9 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
 //import { FirebaseProvider } from '../providers/firebase/firebase';
 
+import { TooltipsModule } from 'ionic-tooltips';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 // Initialize Firebase  (Inhalte aus der FB konfig auf der FB seite kopiert   ...  die zugangsdaten zum Goo service über MEINEN account dort)
 export  const firebaseConfig = {
   apiKey: "AIzaSyD2PfRu3hoXryEEvPEYw7VLr5o-0n9XHos",
@@ -57,7 +60,9 @@ export  const firebaseConfig = {
     IonicStorageModule.forRoot(), //STORAGE
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
-    AngularFireAuthModule 
+    AngularFireAuthModule,
+    TooltipsModule,
+    BrowserAnimationsModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

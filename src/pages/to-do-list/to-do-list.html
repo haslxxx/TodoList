@@ -15,12 +15,12 @@
 
 <ion-content padding>
   <p>
-    Wenn Du den Punkt erledigt hast dann HAKE IHN AB
     <ion-icon name="checkmark-circle-outline" color="secondary"></ion-icon>
+    &emsp; Aufgabe als ERLEDIGT Abhaken
   </p>
   <p>
-    Wenn Du den Punkt heute nicht erledigen willst, dann SCHIEBE IHN ZURÜCK 
     <ion-icon name="arrow-dropleft" color="danger"></ion-icon>
+    &emsp; &ensp; Aufgabe ins Backlog ZURÜCKSCHIEBEN 
   </p>
   <p>
 
@@ -44,10 +44,17 @@
         </ion-icon>
       </ion-item>
       <ion-item-options side="right">
-        <button ion-button icon-only color="secondary" (click)="doneClicked(item)">
+        <button ion-button icon-only color="secondary" (click)="doneClicked(item)"
+        tooltip="Als erledigt markieren" positionH="right" 
+        [attr.arrow]="showArrow" [attr.event]="tooltipEvent" 
+        [attr.duration]="duration">
+            
           <ion-icon name="checkmark-circle-outline"></ion-icon>
         </button>
-        <button ion-button icon-only color="danger" (click)="postponeClicked(item)">
+        <button ion-button icon-only color="danger" (click)="postponeClicked(item)"
+        tooltip="Auf Später verschieben" positionH="right" 
+        [attr.arrow]="showArrow" [attr.event]="tooltipEvent" 
+        [attr.duration]="duration">
           <ion-icon name="arrow-dropleft"></ion-icon>
         </button>
      </ion-item-options>

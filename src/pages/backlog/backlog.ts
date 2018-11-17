@@ -7,6 +7,8 @@ import { KanbandataProvider, BacklogItem, ItemStatus, CatString } from '../../pr
 // Portrait / Landscape 
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
+import { AlertController } from 'ionic-angular';
+
 
 @Component({
   selector: 'page-contact',
@@ -18,13 +20,15 @@ export class BacklogPage {
   newItem: BacklogItem;
 
   screenStyle = "landscape";
-  displayFilter = "log"; // Was wollen wir anzeigen
+  displayFilter = "Logged"; // Was wollen wir anzeigen
 
   constructor(
     public navCtrl: NavController, 
     public myData: KanbandataProvider ,
     private screenOrientation: ScreenOrientation,
-    public catString: CatString) {
+    public catString: CatString,
+    private alertCtrl: AlertController
+    ) {
     // this.items = this.myData.getKanbanList(); // Daten laden  ... geht hier nicht
 
     // --- initial SCREEN Orientation
@@ -37,10 +41,33 @@ export class BacklogPage {
             this.setScreenstyle(); 
           // TODO  Hier wird alles aufgerufen was durch eine neuorientierung geändert werden muss
           }  
-    );
-
-    
+    );    
   }
+
+// Alert Popup für den Filter Parameter
+  filterPopup () {
+    let filterAlert = this.alertCtrl.create({
+      message: 'Anzeigefilter',
+/*      cssClass:'prompt_alert',
+      inputs: [
+        {name: 'Filter',value: this.displayFilter}
+      ],
+*/      buttons: [
+        {text: 'Logged',handler: data => {this.setFilter('Logged');}},
+        {text: 'ToDo',handler: data => {this.setFilter('Todo');}},
+        {text: 'All',handler: data => {this.setFilter('All');}},
+        {text: 'Done',handler: data => {this.setFilter('Done');}},
+      ]
+    });
+    filterAlert.present();
+  }
+
+  setFilter(filterType: string){
+    console.log('Filter: ' + filterType);
+    this.displayFilter = filterType;
+    this.getFilteredKanbanList(); 
+  }
+
 
   //############### LIFECYCLE callbacks  systemcallback von IONIC!
   ionViewWillEnter() { 
@@ -53,19 +80,19 @@ export class BacklogPage {
   private getFilteredKanbanList() {
     console.log("DisplayFILTER: " + this.displayFilter); // Über data binding mit wert im html verbunden
     switch(this.displayFilter) { 
-      case "log": { 
+      case "Logged": { 
         this.items = this.myData.getKanbanList().filter(item => item.status == ItemStatus.LOGGED); 
         break; 
       } 
-      case "todo": { 
+      case "Todo": { 
         this.items = this.myData.getKanbanList().filter(item => item.status == ItemStatus.TODO); 
         break; 
       } 
-      case "all": {
+      case "All": {
         this.items = this.myData.getKanbanList();  
         break;    
       } 
-      case "done": { 
+      case "Done": { 
         this.items = this.myData.getKanbanList().filter(item => item.status == ItemStatus.DONE);
         break; 
       }  
@@ -143,7 +170,7 @@ export class BacklogPage {
     }
   }
 
-  filterChange(event) { // User hat anderes displayfilter gewählt
+  filterChange() { // User hat anderes displayfilter gewählt
     this.getFilteredKanbanList();
   }
 

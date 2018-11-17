@@ -1,35 +1,40 @@
 <ion-header>
+  <ion-toolbar>
+      <ion-title id="list-title">Backlog List ( {{displayFilter}} )</ion-title>
+      <p ion-text color="danger"><strong >{{moveInsert}} </strong> </p>
+      <ion-buttons end>
+          <button ion-fab mini color="secondary" (click)="newClicked()">+</button>
+      </ion-buttons>
+      <ion-buttons end>
+          <button ion-button icon-only (click)="filterPopup()"><ion-icon name="more"></ion-icon></button> 
+      </ion-buttons>
+
+
+  </ion-toolbar>
+
+
+
+<!--
   <ion-navbar>
     <ion-grid>
       <ion-row>
-        <ion-col col-4>
-            <ion-title id="list-title">Backlog List</ion-title>
+        <ion-col>
+            <ion-title id="list-title">Backlog List ( {{displayFilter}} )</ion-title>
             <p ion-text color="danger"><strong >{{moveInsert}} </strong> </p>
         </ion-col>   
- 
-        <ion-col>
-         
-
-          <ion-item>
-            <!-- <ion-label>Filter</ion-label> -->
-            <ion-select [(ngModel)]="displayFilter" (ngModelChange)="filterChange($event)">
-              <ion-option value="log" selected="true">Logged</ion-option>
-              <ion-option value="todo">ToDo</ion-option>
-              <ion-option value="all">All</ion-option>
-              <ion-option value="done">Done</ion-option>
-            </ion-select>
-          </ion-item>
-            
-        </ion-col>    
-        <ion-col col-1>
+        <ion-col right>
             <button ion-fab mini color="secondary" (click)="newClicked()">+</button>
         </ion-col>
-        <ion-col col-1></ion-col>
+        <ion-col right>
+          <button ion-button (click)="filterPopup()"><ion-icon name="menu"></ion-icon></button>  
+        </ion-col>
+
       </ion-row>
     </ion-grid>  
     
     
   </ion-navbar>
+  -->
 </ion-header>
 
 
@@ -52,7 +57,7 @@
               <p *ngIf="item.category =='3'">{{catString[3]}}</p>
               <p *ngIf="item.category =='4'">{{catString[4]}}</p>            
           </ion-col>
-          <ion-col col-2 *ngIf="screenStyle =='landscape' && displayFilter == 'all'">{{item.status}}</ion-col>
+          <ion-col col-2 *ngIf="screenStyle =='landscape' && displayFilter == 'All'">{{item.status}}</ion-col>
 
         </ion-row>
         <ion-icon item-end

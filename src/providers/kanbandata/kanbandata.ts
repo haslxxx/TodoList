@@ -60,7 +60,8 @@ export class KanbandataProvider {
   items: Observable<BacklogItem[]>;
 
   toastOptions: ToastOptions;
-  fsPushInitiated: number = 1;
+  fsPushInitiated: number = 1; // Wird mit jeder schreibaktion auf FS incrementiert, mit jedem aufruf des promise decrementiert
+  // so werden alle eigeninitiierten toasts verhindert
 
   constructor(
     private storage: Storage, 
@@ -88,7 +89,7 @@ export class KanbandataProvider {
   }
 
   getKanbanList() {
-    console.log('Hello getKanbanList');
+    console.log('Hello getKanbanList  ');
     return this.backlogItems;
   }
 
@@ -197,6 +198,7 @@ export class KanbandataProvider {
           this.updateBacklogItems(firestoreData);
           if (this.fsPushInitiated > 0) { // Wir waren es selber .. keine notification an den user !
              this.fsPushInitiated--;
+             console.log("Toast-PushCount: " + this.fsPushInitiated)
           } else {
             console.log("Toast");
             this.toast.create(this.toastOptions).present(); // Den user darüber aufklären (nachdem ich es zunächst nicht schaffe die anzeige zu aktualisieren)

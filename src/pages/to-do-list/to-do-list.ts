@@ -12,6 +12,10 @@ export class ToDoListPage {
   //items: Array <BacklogItem>;
   todoItems: Array <BacklogItem>;
 
+  tooltipEvent: 'click' | 'press' = 'click';
+  showArrow: boolean = true;
+  duration: number = 10000;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, public myData: KanbandataProvider) {
   }
 
@@ -28,6 +32,7 @@ export class ToDoListPage {
     item.dateDone = null;
     this.myData.saveKanbanItem(item); // in die datenbasis zurückschreiben
     this.navCtrl.setRoot(this.navCtrl.getActive().component); //frisch anzeigen
+    // TODO  ein Toast mit einer HURRA meldung
   }
 
   doneClicked(item) {  // Punkt ist erledigt -->  status auf "ERLEDIGT" ändern und Datum eintragen
@@ -36,6 +41,7 @@ export class ToDoListPage {
     item.dateDone = new Date().toISOString();  // Aktuelles datum eintragen
     this.myData.saveKanbanItem(item); // in die datenbasis zurückschreiben
     this.navCtrl.setRoot(this.navCtrl.getActive().component); //frisch anzeigen
+    // TODO  ein Toast mit einer HURRA meldung
   }
 
 
