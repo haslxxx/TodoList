@@ -1,7 +1,7 @@
 {
   "name": "TODOkanban",
-  "version": "0.0.1",
-  "author": "Ionic Framework",
+  "version": "1.0.0",
+  "author": "HaslSoft",
   "homepage": "http://ionicframework.com/",
   "private": true,
   "scripts": {
@@ -49,11 +49,11 @@
     "zone.js": "0.8.26"
   },
   "devDependencies": {
-    "@ionic/app-scripts": "3.2.0",
+    "@ionic/app-scripts": "3.2.1",
     "@ionic/lab": "1.0.11",
     "typescript": "~2.6.2"
   },
-  "description": "An Ionic project",
+  "description": "Ionic TODO List",
   "cordova": {
     "plugins": {
       "cordova-plugin-screen-orientation": {},
