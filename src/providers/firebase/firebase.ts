@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
-import { KanbandataProvider,BacklogItem } from '../kanbandata/kanbandata';
+import { KanbandataProvider} from '../kanbandata/kanbandata';
+import { BacklogItem, ItemStatus, Cat, ItemWeight, CatString } from '../../providers/kanbandata/kanbandataInterface';
 
 /*
   Generated class for the FirebaseProvider provider.

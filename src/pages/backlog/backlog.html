@@ -43,7 +43,7 @@
   
   <ion-list>
     <ion-searchbar (ionInput)="onSearch($event)"></ion-searchbar>
-    <ion-item-sliding *ngFor="let item of items" (click)="itemSelected($event, item)" >
+    <ion-item-sliding *ngFor="let item of items"  >
       <ion-item text-wrap>
         <ion-row>
           <ion-col col-12 *ngIf="screenStyle !='landscape'"> {{item.title}} </ion-col>
@@ -66,18 +66,21 @@
         </ion-icon>
       </ion-item>
       <ion-item-options side="right">
-        <button ion-button color="light" (click)="itemChangePriority(item)">
-            <ion-icon name="git-compare"></ion-icon>
-        </button>
-    
-        <button ion-button color="light" (click)="itemEdit(item)">
+        <button ion-button color="light" (click)="itemChangePriority(item)"
+            tooltip="Priorität verschieben" positionV="bottom"  arrow >          
+          <ion-icon name="git-compare"></ion-icon>
+        </button>   
+        <button ion-button color="light" (click)="itemEdit(item)" 
+            tooltip="Edit" positionV="bottom"  arrow >          
           <ion-icon name="create"></ion-icon>
         </button>
-        <button ion-button color="secondary" (click)="itemSelectForTodo(item)">
-            <ion-icon name="walk"></ion-icon>
+        <button ion-button color="secondary" (click)="itemSelectForTodo(item)"
+            tooltip="Zur ToDo Liste" positionV="bottom"  arrow >          
+          <ion-icon name="walk"></ion-icon>
         </button>
-        <button ion-button color="danger" (click)="itemDelete(item)">
-            <ion-icon name="trash"></ion-icon>
+        <button ion-button color="danger" (click)="itemDelete(item)"
+            tooltip="Löschen" positionV="bottom"  arrow >          
+          <ion-icon name="trash"></ion-icon>
         </button>
       </ion-item-options>
     </ion-item-sliding>

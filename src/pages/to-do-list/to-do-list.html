@@ -45,16 +45,12 @@
       </ion-item>
       <ion-item-options side="right">
         <button ion-button icon-only color="secondary" (click)="doneClicked(item)"
-        tooltip="Als erledigt markieren" positionH="right" 
-        [attr.arrow]="showArrow" [attr.event]="tooltipEvent" 
-        [attr.duration]="duration">
+        tooltip="Als erledigt markieren" positionV="bottom"  arrow >
             
           <ion-icon name="checkmark-circle-outline"></ion-icon>
         </button>
         <button ion-button icon-only color="danger" (click)="postponeClicked(item)"
-        tooltip="Auf Später verschieben" positionH="right" 
-        [attr.arrow]="showArrow" [attr.event]="tooltipEvent" 
-        [attr.duration]="duration">
+        tooltip="Auf Später verschieben" positionV="bottom" arrow >
           <ion-icon name="arrow-dropleft"></ion-icon>
         </button>
      </ion-item-options>

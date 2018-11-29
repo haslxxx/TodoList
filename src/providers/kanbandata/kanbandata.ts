@@ -3,19 +3,17 @@ Hier werden die daten bereitgestellt.
 1.) Mockdaten für den anfang
 2.) Lokales storage, damit eine unabhängigkeit von Goo gleibt
 3.) Sync mit goo  firestore
-
 */
 
-
-//import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';   //STORAGE
+import { Subject } from 'rxjs/Subject';
 
 import  _ from 'underscore';                //_.findWhere  etc.
 
 // 3.)
 import { AngularFirestore,  AngularFirestoreCollection } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+//import { Observable } from 'rxjs';
 
 import { ToastController, ToastOptions } from 'ionic-angular';
 import { BacklogItem, ItemStatus, Cat, ItemWeight } from './kanbandataInterface';
@@ -28,9 +26,9 @@ export class KanbandataProvider {
   mockData = new MockItems;
   backlogItems: Array<BacklogItem>; // HIER sind alle LOKALEN Daten
   // 2.)
-  myStorage:Storage;
+  //myStorage:Storage;
   // 3.)  
-  afs: AngularFirestore;
+  //afs: AngularFirestore;
   itemsCollection: AngularFirestoreCollection<BacklogItem> ;
   //items: Observable<BacklogItem[]>;
 
@@ -38,21 +36,24 @@ export class KanbandataProvider {
   fsPushInitiated: number = 1; // Wird mit jeder schreibaktion auf FS incrementiert, mit jedem aufruf des promise decrementiert
   // so werden alle eigeninitiierten toasts verhindert
 
+//##################  SUBJECT
+  dataSubject;
+
   constructor(
-    private storage: Storage, 
-    private afstore: AngularFirestore,
+    public myStorage: Storage, 
+    public afs: AngularFirestore,
     private toast: ToastController
     ) {
 
-      console.log('Hello KanbandataProvider Provider');
+      console.log('Hi KanbandataProvider Provider (KBD)');
       // 1.)
       //this.makeListBacklogMock();  // Zuerst mit Mockdata arbeiten
       // 2.)
-      this.myStorage = storage; //Storageobjekt speichern
+      //this.myStorage = storage; //Storageobjekt speichern
       this.restoreItems();
 
       // 3.)
-      this.afs = afstore; //firestore objekt speichern
+      //this.afs = afstore; //firestore objekt speichern
       this.itemsCollection  = this.afs.collection('mykanbanbacklog'); // Name der collection = wurzel der daten
 
       this.toastOptions = {
@@ -61,29 +62,32 @@ export class KanbandataProvider {
         showCloseButton: true,
         closeButtonText: 'Close'
       }
+//##################  SUBJECT
+      this.dataSubject  = new Subject();  // Observable
   }
 
   getKanbanList() {
-    console.log('Hello getKanbanList  ');
-    return this.backlogItems;
+    console.log('KBD:  getKanbanList');
+//    return this.backlogItems;  ++++++++++++++++++++++++++++++++++++++
+    this.dataSubject.next(this.backlogItems);
   }
 
   // 2.) ############## Local STORAGE 
   restoreItems() {
     //this.downloadReady = false;
     this.myStorage.length().then((val) => { 
-      console.log("StorageLength");
+      console.log("KBD: StorageLength");
       console.log(val);    
       if (val == 0)  { //Keine einträge --> neu anlegen  
-        console.log("Empty List !!)");
+        console.log("KBD: Empty List !!)");
         this.myStorage.set('kanbantodo', this.mockData.getMockBacklogItems); // Wenn leer dann mit Dummydaten füllen
       } else {
         this.myStorage.get('kanbantodo').then((val1) => { //key value pair holen 
           if (val1 == null) { //Keine einträge --> neu anlegen 
-            console.log("No Kanban data");
+            console.log("KBD: No Kanban data");
             this.myStorage.set('kanbantodo', this.mockData.getMockBacklogItems); // Wenn leer dann mit Dummydaten füllen
           } else {
-            console.log("Found Local Kanban data"); // HURRA Daten sind vorhanden
+            console.log("KBD: Found Local Kanban data"); // HURRA Daten sind vorhanden
             // Daten vom LOCAL STORAGE nach priorität sortiert ins lokale ARRAY kopieren
             this.updateBacklogItems(val1);
             
@@ -112,7 +116,7 @@ export class KanbandataProvider {
   }
 
   deleteKanbanItem (itemToDelete: BacklogItem, saveDelete: boolean) {
-    console.log("DelID: " + itemToDelete);
+    console.log("KBD: DelID: " + itemToDelete);
     //var idToDelete = itemToDelete.id; // brauchmagarnicht, das Objekt selber ist ihm genug :-)
     this.backlogItems = this.backlogItems.filter(item => item !== itemToDelete); // item 'rausoperieren'
     // 2.)
@@ -128,7 +132,7 @@ export class KanbandataProvider {
   private pushStorage() { //schreibt das gesamte array neu ins storage
     this.myStorage.set('kanbantodo', this.backlogItems).then(() => { //ab ins geheime storage
       this.myStorage.length().then((val) => { 
-        console.log("local Storage updated");
+        console.log("KBD: local Storage updated");
       });
     });
   }
@@ -136,24 +140,25 @@ export class KanbandataProvider {
 
   // 3.) FIRESTORE ZUGRIFF
   private writeFirestoreItem(itemToWrite: BacklogItem){  // speichert ein eizelnes item in firestore
-    console.log("FirestoreItem written") ;
+    console.log("KBD: FirestoreItem written") ;
     this.fsPushInitiated++; // Verhindert, daß das callback den toast zeigt
     var id = String(itemToWrite.id);
     var setDoc = this.afs.collection('mykanbanbacklog').doc(id).set(itemToWrite);
   }
 
+/* 
   private pushFirestore(){  // speichert alle items in firestore   ACHTUNG: alte IDs bleiben DORT erhalten 
     this.fsPushInitiated++; // Verhindert, daß das callback den toast zeigt
 
     this.itemsCollection.valueChanges();
-/*    
+   
     this.backlogItems.forEach(item => {  // Jedes item einzeln
       this.writeFirestoreItem(item);
     });
-*/
-  }
 
- 
+  }
+*/
+/*   single item based ... better subscribe collection .. see below
   UNUSEDsubscribeFirestoreItem(itemId) {
     var item = this.afs
       .doc<BacklogItem>('/mykanbanbacklog/' + itemId)
@@ -162,21 +167,25 @@ export class KanbandataProvider {
         console.log("FBitem: " + result.id + "  " + result.description);  
       });    ; 
   }
-
+*/
   subscribeFirestoreCollection() {
     this.itemsCollection
       .valueChanges()
       // !!!!!!!!!!! FIRESTORE COLLECTION CALLBACK (promise)
       .subscribe(firestoreData=>{ // Hier steht nun was zu tun ist , wannimmer sich die daten draußen im store ändern
         if (firestoreData.length != 0) {
-          console.log("Got Firestore items");  
+          console.log("KBD: Got Firestore items");  
           this.updateBacklogItems(firestoreData);
           if (this.fsPushInitiated > 0) { // Wir waren es selber .. keine notification an den user !
              this.fsPushInitiated--;
-             console.log("Toast-PushCount: " + this.fsPushInitiated)
+             console.log("KBD: Toast-PushCount: " + this.fsPushInitiated)
           } else {
-            console.log("Toast");
+            console.log("KBD: Toast");
             this.toast.create(this.toastOptions).present(); // Den user darüber aufklären (nachdem ich es zunächst nicht schaffe die anzeige zu aktualisieren)
+//##################  SUBJECT
+            console.log('KBD: write BacklogItems Observable');
+            this.dataSubject.next(this.backlogItems); //send Observable data
+
           }
         };       
       });   
@@ -184,7 +193,7 @@ export class KanbandataProvider {
 
 
   private deleteFirestoreItem(itemToDelete: BacklogItem){
-    console.log("FirestoreItem deleted") ;
+    console.log("KBD: FirestoreItem deleted") ;
     this.fsPushInitiated++; // Verhindert, daß das callback den toast zeigt
     var id = String(itemToDelete.id);
     var setDoc = this.afs.collection('mykanbanbacklog').doc(id).delete();
@@ -194,13 +203,17 @@ export class KanbandataProvider {
  // ##############  UTILS
   private updateBacklogItems(itemList: Array<BacklogItem>) { // schreibt den inhalt von Firestore und/oder Localstorage  ins lokale BacklogItems
     this.backlogItems = _.sortBy(itemList, function(itemX){return parseInt(itemX.priority);});
+//##################  SUBJECT
+    console.log('KBD: update sorted BacklogItems Observable');
+    this.dataSubject.next(this.backlogItems); //send Observable data
+
   };
 
   getNextId() { // durchsucht die gesamte itemsList und findet den höchsten wert für ID
     var maxIdItem = _.max(this.backlogItems, function(itemX){return itemX.id * 1;} );
     var newId =  maxIdItem.id; // Geht nicht in einem, sonst würde die id des gefundenen objektes erhöht werden
     newId++;
-    console.log("GetNextId: " + newId);
+    console.log("KBD: GetNextId: " + newId);
     return newId;
   }
 
@@ -215,7 +228,7 @@ export class KanbandataProvider {
 
     var newPri = <number> maxIdItem.priority; // Geht nicht in einem, sonst würde die id des gefundenen objektes erhöht werden
     newPri++;
-    console.log("GetNextPriority: " + newPri);
+    console.log("KBD: GetNextPriority: " + newPri);
     return newPri;
   }
 
@@ -229,7 +242,7 @@ export class KanbandataProvider {
   }
 
   
- backlogItemEmpty:  BacklogItem   
+  backlogItemEmpty:  BacklogItem   
    = {
     id: 0,
     title: 'Empty Item',
@@ -247,23 +260,8 @@ export class KanbandataProvider {
     return this.backlogItemEmpty;
   } 
 
-  /*
-  // 1.)  ################## MOCK DATA Array  ... DummyDaten
-  
-  makeListBacklogMock() {
-    this.backlogItems = []; 
-    var i = 0;
-    var numOfActivities = this.mockData.getMockBacklogItems.length;     
-    for(i = 0; i < numOfActivities; i++) {
-      this.backlogItems.push(this.mockData.getMockBacklogItems[i]);
-    }
-    // Auffüller
-    var emptyItem  = this.backlogItemEmpty;
-    for (i; i < 14; i++) {
-      emptyItem.title = 'Backlogitem ' + (i+1);  // interessant  .. alle haben die nummer 14  #####TODO
-      this.backlogItems.push(emptyItem);
-    }        
+  public getDataSubject() {
+    return this.dataSubject;
   }
 
-*/
 }

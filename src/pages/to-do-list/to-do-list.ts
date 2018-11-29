@@ -18,14 +18,22 @@ export class ToDoListPage {
   duration: number = 10000;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public myData: KanbandataProvider) {
+    console.log('Hi TodoList page (TDP)')
+    this.subscribeSubjects();     
+    this.myData.getKanbanList(); //Initial Load
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad ToDoListPage');
+    console.log('TDP: ionViewDidLoad');
   }
 
   ionViewWillEnter() {  //Gefilterte Backlogtabelle nach  Status == TODO
-    this.todoItems = this.myData.getKanbanList().filter(item => item.status == ItemStatus.TODO);
+    console.log('TDP: ionVieWillEnter');
+    this.setFilteredList(this.todoItems);
+  }
+
+  setFilteredList(data) {
+    this.todoItems = data.filter(item => item.status == ItemStatus.TODO);
   }
 
   postponeClicked(item) { // Punkt aus der ToDo liste wieder zurück ins Backlog
@@ -44,6 +52,16 @@ export class ToDoListPage {
     this.navCtrl.setRoot(this.navCtrl.getActive().component); //frisch anzeigen
     // TODO  ein Toast mit einer HURRA meldung
   }
+
+  dataSubject;
+  subscribeSubjects() { //Subject ist das praktischere Observable
+    this.dataSubject = this.myData.getDataSubject();
+    this.dataSubject.subscribe((data) => { 
+      this.setFilteredList(data) ;
+      console.log('TDP: Received Subject KanbanData');
+    });
+  }
+
 
 
 }

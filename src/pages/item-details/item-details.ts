@@ -18,21 +18,22 @@ export class ItemDetailsPage {
 
   constructor(public navCtrl: NavController, public myData: KanbandataProvider ,public navParams: NavParams) {
     this.selectedItem = navParams.get('item');
-    console.log("ItemSelected " + this.selectedItem.title);
+    console.log('Hi Item Detailspage (IDP)')
+    console.log("IDP: ItemSelected " + this.selectedItem.title);
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad ItemDetailsPage');
+    console.log('IDP: ionViewDidLoad ItemDetailsPage');
   }
 
   saveClicked() {
-    console.log('ItemDetails saveClicked');
+    console.log('IDP: saveClicked');
     this.myData.saveKanbanItem (this.selectedItem);
     this.navCtrl.pop(); //Zurück zur liste
   }
 
   abortClicked() {
-    console.log('ItemDetails abortClicked');
+    console.log('IDP: abortClicked');
     this.navCtrl.pop(); //Zurück zur liste
   }
 }
