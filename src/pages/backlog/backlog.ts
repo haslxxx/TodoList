@@ -3,7 +3,8 @@ import { NavController } from 'ionic-angular';
 import { ItemDetailsPage } from '../item-details/item-details';
 
 //Data
-import { KanbandataProvider, BacklogItem, ItemStatus, CatString } from '../../providers/kanbandata/kanbandata';
+import { KanbandataProvider } from '../../providers/kanbandata/kanbandata';
+import { BacklogItem, ItemStatus, Cat, ItemWeight, CatString } from '../../providers/kanbandata/kanbandataInterface';
 // Portrait / Landscape 
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
@@ -131,9 +132,11 @@ export class BacklogPage {
 
   itemDelete(item) {
     console.log("Entering itemDelete");
-    this.myData.deleteKanbanItem(item, false);
-    // Versuch die seite neu aufzubauen .. Klappt :-) Aber vorsicht (es killt alle navigationen davor, was in diesem fall nix ausmacht)
-    this.navCtrl.setRoot(this.navCtrl.getActive().component);  
+    if (confirm('Wirklich Löschen ?')) {
+      this.myData.deleteKanbanItem(item, false);
+      // Versuch die seite neu aufzubauen .. Klappt :-) Aber vorsicht (es killt alle navigationen davor, was in diesem fall nix ausmacht)
+      this.navCtrl.setRoot(this.navCtrl.getActive().component);    
+    }
   }
 
   newClicked() {

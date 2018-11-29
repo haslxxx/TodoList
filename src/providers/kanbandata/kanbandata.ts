@@ -17,47 +17,22 @@ import  _ from 'underscore';                //_.findWhere  etc.
 import { AngularFirestore,  AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
-import { ToastController, ToastOptions } from 'ionic-angular'
-
-
-// Innerhalb der klasse mag er keine enums  ... das mit dem export scheint ein nötiger trick zu sein
-export enum Cat {HAUS_GARTEN, UNI, FREIZEIT, ADMIN, SONSTIGES}  // §§§§§§ Kategorie des BacklogItems ... ERWEITERBAR
-export enum DatTyp {FIX, SCHED}  // Harter termin oder locker geplant
-export enum ItemStatus {LOGGED, TODO, DONE}
-export enum ItemWeight {EASY, NORMAL, HEAVY}
-
-export class CatString { // für die anzeige in Views .. weil der user so schlecht mit nummern umgeht
-  0: String = "HAUS"
-  1: String = "UNI"
-  2: String = "FREIZEIT"
-  3: String = "ADMIN"
-  4: String = "SONSTIG"
-}
-export interface BacklogItem {  //statt interface könnte man auch class schreiben
-    id: number;
-    title: string;
-    description: string;
-    category: Cat;
-    dateDue: Date;
-    dateType: DatTyp;
-    priority: number;
-    status: ItemStatus;
-    weight: ItemWeight;
-    dateDone: Date;
-}
-
+import { ToastController, ToastOptions } from 'ionic-angular';
+import { BacklogItem, ItemStatus, Cat, ItemWeight } from './kanbandataInterface';
+import { MockItems } from './mockBacklogItems';
 
 
 @Injectable()
 export class KanbandataProvider {
 
+  mockData = new MockItems;
   backlogItems: Array<BacklogItem>; // HIER sind alle LOKALEN Daten
   // 2.)
   myStorage:Storage;
   // 3.)  
   afs: AngularFirestore;
   itemsCollection: AngularFirestoreCollection<BacklogItem> ;
-  items: Observable<BacklogItem[]>;
+  //items: Observable<BacklogItem[]>;
 
   toastOptions: ToastOptions;
   fsPushInitiated: number = 1; // Wird mit jeder schreibaktion auf FS incrementiert, mit jedem aufruf des promise decrementiert
@@ -101,12 +76,12 @@ export class KanbandataProvider {
       console.log(val);    
       if (val == 0)  { //Keine einträge --> neu anlegen  
         console.log("Empty List !!)");
-        this.myStorage.set('kanbantodo', this.backlogItemsMock); // Wenn leer dann mit Dummydaten füllen
+        this.myStorage.set('kanbantodo', this.mockData.getMockBacklogItems); // Wenn leer dann mit Dummydaten füllen
       } else {
         this.myStorage.get('kanbantodo').then((val1) => { //key value pair holen 
           if (val1 == null) { //Keine einträge --> neu anlegen 
             console.log("No Kanban data");
-            this.myStorage.set('kanbantodo', this.backlogItemsMock); // Wenn leer dann mit Dummydaten füllen
+            this.myStorage.set('kanbantodo', this.mockData.getMockBacklogItems); // Wenn leer dann mit Dummydaten füllen
           } else {
             console.log("Found Local Kanban data"); // HURRA Daten sind vorhanden
             // Daten vom LOCAL STORAGE nach priorität sortiert ins lokale ARRAY kopieren
@@ -253,49 +228,8 @@ export class KanbandataProvider {
     this.backlogItems = sortedItems;
   }
 
-
-  //DUMMYdaten
-  backlogItemsMock: Array <BacklogItem>
-    = Array(
-      {
-        id: 1,
-        title: 'TodoList fertigstellen',
-        description: 'Programm fertigmachen und providers, Firebase zum laufne bringen',
-        category: Cat.UNI,
-        dateDue: null,
-        dateType: null,
-        priority: 1,
-        status: ItemStatus.LOGGED,
-        weight: ItemWeight.NORMAL,
-        dateDone: null 
-      },
-      {
-        id: 2,
-        title: 'Wanderung Dachstein',
-        description: 'Hinfahren, raufgehen, freuen, runtergehen',
-        category: Cat.FREIZEIT,
-        dateDue: null,
-        dateType: null,
-        priority: 2,
-        status: ItemStatus.LOGGED,
-        weight: ItemWeight.NORMAL,
-        dateDone: null 
-      },
-      {
-        id: 3,
-        title: 'Gaaanz langeeeeeeeee Wanderungggggg  Dachsteinnnnnnnnnnnnn',
-        description: 'Hinfahren, raufgehen, freuen, runtergehen',
-        category: Cat.FREIZEIT,
-        dateDue: null,
-        dateType: null,
-        priority: 5,
-        status: ItemStatus.TODO,
-        weight: ItemWeight.EASY,
-        dateDone: null 
-      }
-  );
- 
-  backlogItemEmpty:  BacklogItem   
+  
+ backlogItemEmpty:  BacklogItem   
    = {
     id: 0,
     title: 'Empty Item',
@@ -308,14 +242,20 @@ export class KanbandataProvider {
     weight: ItemWeight.NORMAL,
     dateDone: null 
   } ;
+    
+  getEmptyItem() {
+    return this.backlogItemEmpty;
+  } 
 
-  // 1.)  ################## MOCK DATA   ... DummyDaten
+  /*
+  // 1.)  ################## MOCK DATA Array  ... DummyDaten
+  
   makeListBacklogMock() {
     this.backlogItems = []; 
     var i = 0;
-    var numOfActivities = this.backlogItemsMock.length;     
+    var numOfActivities = this.mockData.getMockBacklogItems.length;     
     for(i = 0; i < numOfActivities; i++) {
-      this.backlogItems.push(this.backlogItemsMock[i]);
+      this.backlogItems.push(this.mockData.getMockBacklogItems[i]);
     }
     // Auffüller
     var emptyItem  = this.backlogItemEmpty;
@@ -325,8 +265,5 @@ export class KanbandataProvider {
     }        
   }
 
-  getEmptyItem() {
-    return this.backlogItemEmpty;
-  } 
-
+*/
 }

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { KanbandataProvider, BacklogItem , ItemStatus} from '../../providers/kanbandata/kanbandata';
+import { KanbandataProvider} from '../../providers/kanbandata/kanbandata';
+import { BacklogItem, ItemStatus, Cat, ItemWeight, CatString } from '../../providers/kanbandata/kanbandataInterface';
 
 @IonicPage()
 @Component({

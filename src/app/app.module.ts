@@ -15,7 +15,8 @@ import { ItemDetailsPage } from '../pages/item-details/item-details';
 
 //Daten
 import { IonicStorageModule } from '@ionic/storage'; //STORAGE hält die daten lokal, die mit firestore synchronisiert werden
-import { KanbandataProvider, CatString } from '../providers/kanbandata/kanbandata';
+import {  CatString } from '../providers/kanbandata/kanbandataInterface';
+import { KanbandataProvider} from '../providers/kanbandata/kanbandata';
 
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
