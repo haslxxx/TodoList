@@ -20,14 +20,13 @@ import { KanbandataProvider} from '../providers/kanbandata/kanbandata';
 
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
-// Goo Daten
-//import { FirestorePage } from '../pages/firestore/firestore';
- 
+// Goo Daten AngularFirestore !! NICHT angular2
 import { AngularFireModule } from '@angular/fire';
-import { AngularFireDatabaseModule, AngularFireDatabase } from '@angular/fire/database';
-import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
-//import { FirebaseProvider } from '../providers/firebase/firebase';
+
+//Goo Authentication  !! NICHT angular2
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
 
 import { TooltipsModule } from 'ionic-tooltips';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -45,18 +44,17 @@ import { firebaseConfig } from '../assets/fireBaseConfig';
     HomePage,
     TabsPage,
     ItemDetailsPage,
-    ToDoListPage //,
-    //FirestorePage
+    ToDoListPage 
   ],
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot(), //STORAGE
     AngularFireModule.initializeApp(firebaseConfig),
-    AngularFireDatabaseModule,
-    AngularFireAuthModule,
     TooltipsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    AngularFireAuthModule,
+    AngularFirestoreModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -66,19 +64,17 @@ import { firebaseConfig } from '../assets/fireBaseConfig';
     HomePage,
     TabsPage,
     ToDoListPage,
-    ItemDetailsPage //,
-    // FirestorePage
+    ItemDetailsPage 
   ],
   providers: [
     StatusBar,
     SplashScreen,
     ScreenOrientation,
-    AngularFireDatabase,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     KanbandataProvider,
-    //FirebaseProvider,
     AngularFirestore,
-    CatString //Mühsame zurückverwandlung eines enum in einen text
+    CatString, //Mühsame zurückverwandlung eines enum in einen text
+   
   ]
 })
 export class AppModule {}

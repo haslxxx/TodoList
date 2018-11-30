@@ -67,6 +67,7 @@ export class BacklogPage {
     console.log('BLP: Filter: ' + filterType);
     this.displayFilter = filterType;
 //    this.getFilteredKanbanList(); +++++++++++++++++++++++++++++++++++++++++++
+this.myData.getKanbanList();    //Ganze liste wiederherstellen
     this.setFilteredKanbanList(this.items); 
   }
 
@@ -78,6 +79,7 @@ export class BacklogPage {
 
   private setFilteredKanbanList(data) {
     console.log("BLP: DisplayFILTER: " + this.displayFilter); // Über data binding mit wert im html verbunden
+//    this.myData.getKanbanList();    //Ganze liste wiederherstellen  ... geht nicht .. endlosschleife
     switch(this.displayFilter) { 
       case "Logged": { 
         this.items = data.filter(item => item.status == ItemStatus.LOGGED); 

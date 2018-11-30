@@ -9,28 +9,77 @@
 
 <ion-content padding>
 
-  <p>
-    Dieses <strong><i>Mini-Kanban</i></strong> besteht nur aus <strong><i>2 Boards</i></strong>. 
-  </p>
-  <div>.</div>
-  <p>
-      Im <strong><i>Backlog</i></strong> werden alle Aufgaben erfasst, priorisiert und kategorisiert. 
-  </p>
-  <p>
-      In der <strong><i>ToDo</i></strong> -list sind pro Tag nur maximal X Aufgaben (aus dem Backlog). 
-  </p>
-  <div> .</div>
-  <p>
-    Sind alle Aufgaben erledigt, ist der Tagesplan abgeschlossen 
-    <ion-icon name="thumbs-up" color="secondary"></ion-icon>
-  </p>
-  <div> .</div>
-  <p>
-    Details im HowTo ! 
-    <ion-icon name="information-circle" color="primary"></ion-icon>
-  </p>
+  <!-- PART2  Brief User information   -->
+  <ion-item *ngIf="!login">
+    <ion-card>    
 
- <!-- 
-  <pre>{{userDoc | json | async}}</pre>
- --> 
+      <p>
+        Dieses <strong><i>Mini-Kanban</i></strong> besteht nur aus <strong><i>2 Boards</i></strong>. 
+      </p>
+      <div><br></div>
+      <p>
+          Im <strong><i>Backlog</i></strong> werden alle Aufgaben erfasst, priorisiert und kategorisiert. 
+      </p>
+      <p>
+          In der <strong><i>ToDo</i></strong> -list sind pro Tag nur maximal X Aufgaben (aus dem Backlog). 
+      </p>
+      <div> <br></div>
+      <p>
+        Sind alle Aufgaben erledigt, ist der Tagesplan abgeschlossen 
+        <ion-icon name="thumbs-up" color="secondary"></ion-icon>
+      </p>
+      <div> <br></div>
+      <p>
+        Details im HowTo ! 
+        <ion-icon name="information-circle" color="primary"></ion-icon>
+      </p>
+      
+    </ion-card>
+    <button ion-button full  (click)="gotoLoginPageClicked()" >Login ändern</button>
+
+  </ion-item>
+   <!--  --> 
+
+<!-- PART1  User Login /authentication -->
+  <ion-card *ngIf="login">   
+    <form [formGroup]="simple_form" >
+    <ion-item>
+      <b>Login /Accounterstellung</b>
+    </ion-item>
+    <br>
+      <ion-item>
+        <ion-label floating >e-mail</ion-label>
+        <ion-input type="text" formControlName="mail" class="form-controll" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label floating >Passwort</ion-label>
+        <ion-input type="password" formControlName="pwd" class="form-controll" required></ion-input>
+      </ion-item>
+      <br>
+
+      <button ion-button [disabled]="!simple_form.valid" (click)="loginClicked(simple_form.value)" type="submit">Login</button>
+      <button ion-button [disabled]="!simple_form.valid" (click)="addAccount(simple_form.value)" type="submit">Neuer Account</button>
+      <button ion-button  (click)="exitLoginPage()" type="submit">Exit</button>
+
+    </form>
+
+    <ion-item>
+      Du bist eingeloggt als: {{userName}}
+      <button ion-button  (click)="logoutClicked()" type="submit">Ausloggen ?</button>
+    </ion-item>
+    <ion-item>
+        <ion-label  >Eingeloggt bleiben</ion-label>
+        <ion-checkbox  item-right [(ngModel)]="stayLoggedIn" (click)="stayLoggedInChange()"></ion-checkbox>
+    </ion-item>
+  </ion-card>
+  <!--  -->
+
+ 
+   <!--
+  <button ion-button full  (click)="add(simple_form.value)" >Add</button>
+-->
+
+
+ 
 </ion-content>
