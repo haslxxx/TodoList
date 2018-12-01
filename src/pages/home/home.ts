@@ -23,6 +23,7 @@ export class HomePage {
   simple_form: FormGroup;
   stayLoggedIn: boolean;
   userName: string = "DUMMY";
+  userId: string = "00";
 
   constructor(
     public navCtrl: NavController, 
@@ -34,57 +35,83 @@ export class HomePage {
     // der user die listen Backlog oder ToDo anwählt
 
     this.myData.subscribeFirestoreCollection(); //An Goo firestore "andocken" .. der rest passiert im callback in
-
-    var user = this.afAuth.auth.currentUser;
-    var name, email, photoUrl, uid, emailVerified;
-  
-    this.afAuth.auth.onAuthStateChanged(function(user) {
-      var that = this;
-      console.log('AUTH: userAuthchange');
-      
-
-      if (user) {
-        // User is signed in.
-        console.log('AUTH: userAuthchange user exists');
-        this.name = user.displayName;
-        this.email = user.email;
-        this.photoUrl = user.photoURL;
-        this.emailVerified = user.emailVerified;
-        this.uid = user.uid;  // The user's ID, unique to the Firebase project. Do NOT use
-                         // this value to authenticate with your backend server, if
-                         // you have one. Use User.getToken() instead.
-        console.log('AUTH: userAuthchange  ' + this.uid);
-
-      
-        this.userName = this.email;
-      } else {
-        // No user is signed in.
-      }
-    });
-    
-
+    this.subscribeAuthChange(); // listen to changes in authorization
   }
 
   ionViewWillLoad(){
     this.getData();
   }
 
-//------------------------------------------------
-emailSignUp(credentials: EmailPasswordCredentials): firebase.Promise<FirebaseAuthState> {
-  return this.af.auth.createUser(credentials)
-    .then(() => console.log("success"))
-    .catch(error => console.log(error));
-}
+  getData(){  //create form based on HTML form
+    this.simple_form = this.formBuilder.group({
+      name: new FormControl('', Validators.required),
+      mail: new FormControl('', Validators.required),
+      pwd: new FormControl('', Validators.required),
+    });
+  }
+
+  user ; //user profile
+  //name;
+  email;
+  photoUrl;
+  uid;
+  emailVerified;
+
+  subscribeAuthChange() {
+    var that = this;
+    this.afAuth.auth.onAuthStateChanged(function(user) {
+      that.user = user;
+      console.log('AUTH: userAuthchange ');
+      
+      if (user) {
+        // User is signed in.
+        console.log('AUTH: userAuthchange user valid');
+        that.userName = user.displayName;
+        that.email = user.email;
+        that.photoUrl = user.photoURL;
+        that.emailVerified = user.emailVerified;
+        that.uid = user.uid;  // The user's ID, unique to the Firebase project. Do NOT use
+                        // this value to newUserAccount with your backend server, if
+                        // you have one. Use User.getToken() instead.
+        console.log('AUTH: userData  ' + that.uid + ' ' + that.userName + ' ' + that.email );
+
+        that.userName = user.displayName;
+        that.userId = user.uid;
+      } else {
+        // No user is signed in.
+        that.userName = "";
+        that.userId = "00";
+      }
+    });
+
+  }
 
 
+  getUserId() {
+    if (this.user) {
+      console.log("AUTH: Returning User ID " + this.user.uid);
+      return this.user.uid;
+    } else {
+      return "00";
+    }   
+  }
 
+  
+  getUserName() {
+    if (this.user) {
+      console.log("AUTH: Returning User ID " + this.user.displayName);
+      return this.user.displayName;
+    } else {
+      return "Nobody logged in";
+    }   
+  }
 
 
 //-------------------------------------------------
 
+//accountCreated: boolean = false;
 
-
-  authenticate(credentials) {
+  newUserAccount(credentials) {
     console.log('AUTH: create useraccount');
     //debugger;
     var that = this;
@@ -92,9 +119,13 @@ emailSignUp(credentials: EmailPasswordCredentials): firebase.Promise<FirebaseAut
     this.afAuth.auth.createUserWithEmailAndPassword(credentials.mail, credentials.pwd)
 //    .then( () => console.log("AUTH: Account Created")) 
     .then (function() {
-        confirm('Account created');
+//        that.accountCreated = true;
+        that.updateUserProfile(credentials.name); // namen nachträglich einfügen
+
+        confirm('Account created ' + that.user.displayName);
         that.login = false;  // zurück zur homepage
-        that.userName = credentials.mail;
+//        that.userName = credentials.mail;
+        
         //If the new account was created, the user is signed in automatically. 
     })
     .catch(function(error) { // Handle Errors here.     
@@ -116,10 +147,31 @@ emailSignUp(credentials: EmailPasswordCredentials): firebase.Promise<FirebaseAut
 
   gotoLoginPageClicked() {
     this.login = true;
+    this.userName = this.getUserName();
+
   }
 
   exitLoginPage() {
     this.login = false;
+  }
+
+  updateUserProfile(name) {
+    console.log('AUTH: Update Profile ' + name);
+    var that = this;
+    var user = this.afAuth.auth.currentUser;
+
+    user.updateProfile({
+//      displayName: "Jane Q. User",
+      displayName: name ,
+      photoURL: ""
+    }).then(function() {
+      // Update successful.
+      console.log('AUTH: Profile updated ' + this.user.name);
+      that.user.name = this.name;
+    }).catch(function(error) {
+      console.log('AUTH: Profile update ERR ' + error.message);
+    });
+    
   }
 
   loginClicked(credentials) {
@@ -159,7 +211,7 @@ emailSignUp(credentials: EmailPasswordCredentials): firebase.Promise<FirebaseAut
     var that = this;
     console.log('AUTH: Logout clicked');
     this.afAuth.auth.signOut().then(function() {
-      that.userName = "";
+//      that.userName = "";
       // Sign-out successful.
       console.log('AUTH: Signout OK');
     }).catch(function(error) {
@@ -168,12 +220,14 @@ emailSignUp(credentials: EmailPasswordCredentials): firebase.Promise<FirebaseAut
     });
   }
 
-
-  addAccount(value){
-    
-    console.log("AUTH: AddAccount clicked: " + value.mail);
+  addAccount(value){    
+    console.log("AUTH: AddAccount clicked: " + value.mail + ' ' + value.name);
     //this.login = false;
-    this.authenticate(value);
+    this.newUserAccount(value);
+    // if (this.accountCreated) {
+    //   this.accountCreated = false;
+    //   this.updateUserProfile(value.name); // namen nachträglich einfügen
+    // }
 
   /*  
     this.firebaseService.addUser(value)
@@ -196,11 +250,5 @@ emailSignUp(credentials: EmailPasswordCredentials): firebase.Promise<FirebaseAut
   }
 
 
-  getData(){
-    this.simple_form = this.formBuilder.group({
-      mail: new FormControl('', Validators.required),
-      pwd: new FormControl('', Validators.required),
-    });
-  }
 
 }

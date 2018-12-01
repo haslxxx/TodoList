@@ -35,8 +35,11 @@
       </p>
       
     </ion-card>
-    <button ion-button full  (click)="gotoLoginPageClicked()" >Login ändern</button>
-
+    <ion-card>
+      <br>Hallo &nbsp; <b>{{userName}}</b> &nbsp;&nbsp;&nbsp;&nbsp;
+      <button ion-button small float-right (click)="gotoLoginPageClicked()" >Login ändern</button>
+    </ion-card>
+    {{userId}}
   </ion-item>
    <!--  --> 
 
@@ -47,6 +50,11 @@
       <b>Login /Accounterstellung</b>
     </ion-item>
     <br>
+    <ion-item>
+        <ion-label floating >Username</ion-label>
+        <ion-input type="text" formControlName="name" class="form-controll" required></ion-input>
+      </ion-item>
+
       <ion-item>
         <ion-label floating >e-mail</ion-label>
         <ion-input type="text" formControlName="mail" class="form-controll" required></ion-input>
@@ -65,7 +73,8 @@
     </form>
 
     <ion-item>
-      Du bist eingeloggt als: {{userName}}
+      Du bist eingeloggt als: &nbsp; <b>{{userName}}</b>
+      <br>
       <button ion-button  (click)="logoutClicked()" type="submit">Ausloggen ?</button>
     </ion-item>
     <ion-item>
