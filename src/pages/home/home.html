@@ -67,8 +67,8 @@
       <br>
 
       <button ion-button [disabled]="!simple_form.valid" (click)="loginClicked(simple_form.value)" type="submit">Login</button>
-      <button ion-button [disabled]="!simple_form.valid" (click)="addAccount(simple_form.value)" type="submit">Neuer Account</button>
-      <button ion-button  (click)="exitLoginPage()" type="submit">Exit</button>
+      <button ion-button [disabled]="!simple_form.valid" (click)="addAccountClicked(simple_form.value)" type="submit">Neuer Account</button>
+      <button ion-button  (click)="exitLoginPageClicked()" type="submit">Exit</button>
 
     </form>
 

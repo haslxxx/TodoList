@@ -33,6 +33,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // Initialize Firebase  (Inhalte aus der FB konfig auf der FB seite kopiert   ...  die zugangsdaten zum Goo service über MEINEN account dort)
 import { firebaseConfig } from '../assets/fireBaseConfig';
+import { MockItems } from '../providers/kanbandata/mockBacklogItems';
 
 
 
@@ -74,7 +75,7 @@ import { firebaseConfig } from '../assets/fireBaseConfig';
     KanbandataProvider,
     AngularFirestore,
     CatString, //Mühsame zurückverwandlung eines enum in einen text
-   
+    MockItems
   ]
 })
 export class AppModule {}

@@ -3,10 +3,11 @@
 
 
   export class MockItems {
+    backlogItemsMock:Array <BacklogItem>;
 
     public getMockBacklogItems() {
         
-      var backlogItemsMock
+      this.backlogItemsMock
         = Array <BacklogItem>
       (
       {
@@ -47,7 +48,7 @@
       }
       );
 
-    return backlogItemsMock;
+    return this.backlogItemsMock;
     }
 
       

@@ -218,6 +218,7 @@ export class BacklogPage {
     this.dataSubject = this.myData.getDataSubject();
     this.dataSubject.subscribe((data) => { 
       this.setFilteredKanbanList(data);
+//debugger; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!      
       console.log('BLP: Received Subject KanbanData');
     });
   }

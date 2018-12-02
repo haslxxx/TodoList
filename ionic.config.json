@@ -4,4 +4,4 @@
     "cordova": {}
   },
   "type": "ionic-angular"
-}
+, "defaultBrowser": "chrome"}
