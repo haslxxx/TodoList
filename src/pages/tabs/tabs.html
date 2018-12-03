@@ -1,6 +1,11 @@
 <ion-tabs>
   <ion-tab [root]="tab1Root" tabTitle="Home" tabIcon="home"></ion-tab>
   <ion-tab [root]="tab2Root" tabTitle="HowTo" tabIcon="information-circle"></ion-tab>
-  <ion-tab [root]="tab3Root" tabTitle="Backlog" tabIcon="folder"></ion-tab>
-  <ion-tab [root]="tab4Root" tabTitle="ToDo" tabIcon="hammer"></ion-tab>
+  <ion-tab *ngIf="userIsLoggedIn" [root]="tab3Root" tabTitle="Backlog" tabIcon="folder"></ion-tab>
+  <ion-tab *ngIf="userIsLoggedIn" [root]="tab4Root" tabTitle="ToDo" tabIcon="hammer"></ion-tab>
 </ion-tabs>
+
+<!--
+<page-home  (userLoggedIn)="loginStateChanged($event)"></page-home>
+-->
+

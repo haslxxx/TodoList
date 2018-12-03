@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 //Data
@@ -18,6 +18,7 @@ export class EmailPasswordCredentials {
   templateUrl: 'home.html'
 })
 export class HomePage {
+  @Output() userLoggedIn = new EventEmitter<boolean>();  // this will submit the login state to the Tabs page
   // view appearance flags
   showLoginPage: boolean = true;
   userIsLoggedIn: boolean = false;
@@ -101,12 +102,14 @@ export class HomePage {
 
         that.myData.subscribeFirestoreCollection(); // Goo firestore subscription for user
         console.log('AUTH2 showLoginPage:' + that.showLoginPage + ' userLoggedIn: ' + that.userIsLoggedIn);
+        that.userLoggedIn.emit(that.userIsLoggedIn); // submit status to Tabs page
 
       } else {
         // No user is signed in.
         console.log('AUTH: userAuthchange user NOT logged in');
         that.userName = "";
         that.userIsLoggedIn = false;
+        that.userLoggedIn.emit(that.userIsLoggedIn); // submit status to Tabs page
   //      that.userId = "00";
       }
     });
@@ -131,6 +134,10 @@ export class HomePage {
     } else {
       return "Nobody logged in";
     }   
+  }
+
+  public getLoginStatus() {
+    return this.userIsLoggedIn;
   }
 
 
