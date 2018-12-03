@@ -21,11 +21,11 @@
           Im <strong><i>Backlog</i></strong> werden alle Aufgaben erfasst, priorisiert und kategorisiert. 
       </p>
       <p>
-          In der <strong><i>ToDo</i></strong> -list sind pro Tag nur maximal X Aufgaben (aus dem Backlog). 
+          In der <strong><i>ToDo</i></strong> -liste sollen pro Tag nur wenige Aufgaben (aus dem Backlog) stehen (2-4). 
       </p>
       <div> <br></div>
       <p>
-        Sind alle Aufgaben erledigt, ist der Tagesplan abgeschlossen 
+        Sind alle Aufgaben aus der ToDo-liste erledigt, ist der Tagesplan abgeschlossen 
         <ion-icon name="thumbs-up" color="secondary"></ion-icon>
       </p>
       <div> <br></div>
@@ -60,7 +60,7 @@
   <ion-card *ngIf="showLoginPage && !userIsLoggedIn && !showNewAccountView">
     <form [formGroup]="simple_form"  >
       <ion-item>
-        <b>Bitte loggen Sie sich ein !</b>
+        <b>Bitte log dich ein !</b>
       </ion-item>
       <br>
 <!-- 
@@ -82,6 +82,7 @@
 
       <button ion-button [disabled]="!simple_form.valid" (click)="loginClicked(simple_form.value)" type="submit">Login</button>
       <button ion-button item-right (click)="newAccounViewClicked()" type="submit">Neuer Account</button>
+      <button ion-button item-right (click)="pwdForgottenClicked(simple_form.value)" type="submit">Passwort Vergessen ?</button>
   
     </form>
 

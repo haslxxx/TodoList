@@ -225,6 +225,19 @@ export class HomePage {
   newAccountViewExitClicked() {
     this.showNewAccountView = false;
   }
+
+  pwdForgottenClicked(form) {
+    console.log('AUTH: PasswordForgotten: ' +  form.mail);
+    this.afAuth.auth.sendPasswordResetEmail(form.mail)
+    .then(function() {
+      // Email sent.
+      console.log('AUTH: PasswordForgotten mail sent ');
+      alert('Wir haben auf deine email Adresse eine mail zum Neusetzen des passwortes gesendet');
+    }).catch(function(error) {
+      console.log('AUTH: PasswordForgotten mail error ' + error.message);
+      alert('Bitte gib eine gültige e-mail Adresse ein');
+    });    
+  }
   
   gotoLoginPageClicked() {
     this.showLoginPage = true;
