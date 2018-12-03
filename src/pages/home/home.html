@@ -10,7 +10,7 @@
 <ion-content padding>
 
   <!-- PART2  Brief User information   -->
-  <ion-item *ngIf="!login">
+  <ion-item *ngIf="!showLoginPage">
     <ion-card>    
 
       <p>
@@ -39,49 +39,102 @@
       <br>Hallo &nbsp; <b>{{userName}}</b> &nbsp;&nbsp;&nbsp;&nbsp;
       <button ion-button small float-right (click)="gotoLoginPageClicked()" >Login ändern</button>
     </ion-card>
-    {{userId}}
+     <!--  {{userId}} -->
   </ion-item>
    <!--  --> 
 
 <!-- PART1  User Login /authentication -->
-  <ion-card *ngIf="login">   
-    <form [formGroup]="simple_form" >
-    <ion-item>
-      <b>Login /Accounterstellung</b>
+  <!-- View 1  User Logout -->
+  <ion-card *ngIf="showLoginPage && userIsLoggedIn">   
+    <ion-item >
+
+        Du bist eingeloggt als: &nbsp; <b>{{userName}}</b>
+        <br><br>
+        <button ion-button  (click)="logoutClicked()" type="submit">Ausloggen ?</button>
+        <button ion-button item-right (click)="exitLoginPageClicked()" type="submit">Exit</button>
+
     </ion-item>
-    <br>
-    <ion-item>
+  </ion-card>
+
+  <!-- View 2  User Login-->
+  <ion-card *ngIf="showLoginPage && !userIsLoggedIn && !showNewAccountView">
+    <form [formGroup]="simple_form"  >
+      <ion-item>
+        <b>Bitte loggen Sie sich ein !</b>
+      </ion-item>
+      <br>
+<!-- 
+      <ion-item>
         <ion-label floating >Username</ion-label>
         <ion-input type="text" formControlName="name" class="form-controll" required></ion-input>
       </ion-item>
-
+ -->
       <ion-item>
-        <ion-label floating >e-mail</ion-label>
+        <ion-label floating color = "danger">e-mail <i>&nbsp;( * required )</i></ion-label>
         <ion-input type="text" formControlName="mail" class="form-controll" required></ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-label floating >Passwort</ion-label>
+        <ion-label floating color = "danger">Passwort<i>&nbsp;( * required )</i></ion-label>
         <ion-input type="password" formControlName="pwd" class="form-controll" required></ion-input>
       </ion-item>
       <br>
 
       <button ion-button [disabled]="!simple_form.valid" (click)="loginClicked(simple_form.value)" type="submit">Login</button>
-      <button ion-button [disabled]="!simple_form.valid" (click)="addAccountClicked(simple_form.value)" type="submit">Neuer Account</button>
-      <button ion-button  (click)="exitLoginPageClicked()" type="submit">Exit</button>
-
+      <button ion-button item-right (click)="newAccounViewClicked()" type="submit">Neuer Account</button>
+  
     </form>
 
+
+
     <ion-item>
-      Du bist eingeloggt als: &nbsp; <b>{{userName}}</b>
-      <br>
-      <button ion-button  (click)="logoutClicked()" type="submit">Ausloggen ?</button>
     </ion-item>
+
     <ion-item>
         <ion-label  >Eingeloggt bleiben</ion-label>
         <ion-checkbox  item-right [(ngModel)]="stayLoggedIn" (click)="stayLoggedInChange()"></ion-checkbox>
     </ion-item>
   </ion-card>
+
+  <!-- View 3  New Account creation -->
+  <ion-card *ngIf="showLoginPage && !userIsLoggedIn && showNewAccountView">
+      <form [formGroup]="simple_form"  >
+      <ion-item>
+        <b>Accounterstellung</b>
+      </ion-item>
+      <br>
+      <ion-item>
+          <ion-label floating color = "danger">Username<i>&nbsp;( * required )</i></ion-label>
+          <ion-input type="text" formControlName="name" class="form-controll" required></ion-input>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label floating color = "danger">e-mail<i>&nbsp;( * required )</i></ion-label>
+          <ion-input type="text" formControlName="mail" class="form-controll" required></ion-input>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label floating color = "danger">Passwort<i>&nbsp;( * required )</i></ion-label>
+          <ion-input type="password" formControlName="pwd" class="form-controll" required></ion-input>
+        </ion-item>
+        <br>
+  
+        <button ion-button [disabled]="!simple_form.valid" (click)="addAccountClicked(simple_form.value)" type="submit">Neuer Account</button>
+        <button ion-button item-right (click)="newAccountViewExitClicked()" type="submit">Exit</button>
+  
+      </form>
+  
+  
+  
+      <ion-item>
+      </ion-item>
+  
+      <ion-item>
+          <ion-label  >Eingeloggt bleiben</ion-label>
+          <ion-checkbox  item-right [(ngModel)]="stayLoggedIn" (click)="stayLoggedInChange()"></ion-checkbox>
+      </ion-item>
+    </ion-card>
+  
   <!--  -->
 
  

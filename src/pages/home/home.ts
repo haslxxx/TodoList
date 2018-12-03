@@ -18,9 +18,13 @@ export class EmailPasswordCredentials {
   templateUrl: 'home.html'
 })
 export class HomePage {
-  login: boolean = false;
+  // view appearance flags
+  showLoginPage: boolean = true;
+  userIsLoggedIn: boolean = false;
+  showNewAccountView: boolean = false;
+
   simple_form: FormGroup;
-  stayLoggedIn: boolean;
+  stayLoggedIn: boolean = true;
   userName: string = "DUMMY";
   userId: string = "00";
 
@@ -36,15 +40,21 @@ export class HomePage {
     // passiert nun im callback zum AuthChange    
       // --> this.myData.subscribeFirestoreCollection(); //An Goo firestore "andocken" .. der rest passiert im callback in
     this.subscribeAuthChange(); // listen to changes in authorization
+
+    //IRGENDEIN DELAY
+    // this.delay(2000);
+    // console.log('delay left');
   }
 
   ionViewWillLoad(){
     this.getFormData();
+    console.log('HP: viewWillLoad: showLoginPage:' + this.showLoginPage + ' userLoggedIn: ' + this.userIsLoggedIn);
+    if (!this.userId) this.showLoginPage = true;
   }
 
   getFormData(){  //create form based on HTML form
     this.simple_form = this.formBuilder.group({
-      name: new FormControl('', Validators.required),
+      name: new FormControl(''),
       mail: new FormControl('', Validators.required),
       pwd: new FormControl('', Validators.required),
     });
@@ -58,6 +68,7 @@ export class HomePage {
   //emailVerified;
 
   subscribeAuthChange() {  //change in logged in user
+    
     var that = this;
     this.afAuth.auth.onAuthStateChanged(function(user) {
       that.user = user;
@@ -65,6 +76,9 @@ export class HomePage {
       
       if (user) {  // User is signed in.       
         console.log('AUTH: userAuthchange user valid');
+        
+        that.userIsLoggedIn = true;
+
         that.userName = user.displayName;
         that.email = user.email;
         //that.photoUrl = user.photoURL;
@@ -81,15 +95,19 @@ export class HomePage {
           that.userName = that.newUserName;         
         }
         console.log('AUTH: userData  ' + that.userId + ' ' + that.userName + ' ' + that.email );
-
+        if (that.userId) that.showLoginPage = false;
         that.myData.setUser(user, today, that.newUser, that.userName);  // Pass userdata to data provider
-        that.newUser = false;
+        that.newUser = false;  //flag reset
 
         that.myData.subscribeFirestoreCollection(); // Goo firestore subscription for user
+        console.log('AUTH2 showLoginPage:' + that.showLoginPage + ' userLoggedIn: ' + that.userIsLoggedIn);
+
       } else {
         // No user is signed in.
+        console.log('AUTH: userAuthchange user NOT logged in');
         that.userName = "";
-        that.userId = "00";
+        that.userIsLoggedIn = false;
+  //      that.userId = "00";
       }
     });
 
@@ -130,8 +148,9 @@ export class HomePage {
     .then (function() {
       that.userName = credentials.name; // daher setzen wie ihn mal schon hier  .. sieh unten Aufruf updateUserProfile
       console.log('AUTH: Account created');
-      confirm('Account created ' + that.userName);
-      that.login = false;  // zurück zur homepageanzeige
+      //confirm('Account created ' + that.userName);
+      alert ('Account created ' + that.userName);
+      that.showLoginPage = false;  // zurück zur homepageanzeige
 
       that.updateUserProfile(credentials.name); // namen nachträglich in den account einfügen (asynchron !!)
         //  ... hierher kommen wir niemals !!!
@@ -144,7 +163,8 @@ export class HomePage {
         var errorMessage = error.message;        
         if(errorCode) {
           console.log('AUTH: account create error ' + errorCode + '  ' + errorMessage);
-          confirm(errorMessage);
+//          confirm(errorMessage);
+          alert(errorMessage);
         };
     });
   }
@@ -172,34 +192,47 @@ export class HomePage {
     var that = this;
     this.afAuth.auth.signInWithEmailAndPassword(credentials.mail, credentials.pwd)
     .then (function() {
-      console.log('AUTH: login OK ');
-      that.login = false;  // back to homepage
+      console.log('AUTH: Login OK ');
+      that.showLoginPage = false;  // back to homepage
       //If the new account was created, the user is signed in automatically. 
-      confirm('Login Successful');
+//      confirm('showLoginPage Successful');
+      alert('Login Successful');
     })
     .catch(function(error) { // Handle Errors here.
-      console.log('AUTH: login ERR ');     
+      console.log('AUTH: Login ERR ');     
       var errorCode = error.code;
       var errorMessage = error.message;      
       if(errorCode) {
         console.log('AUTH: error ' + errorCode + '  ' + errorMessage);
-        confirm(errorMessage);
+//        confirm(errorMessage);
+        alert(errorMessage);
       };
     });
   }
+
+  newAccounViewClicked() {
+    this.showNewAccountView = true;
+
+  }
+
+  newAccountViewExitClicked() {
+    this.showNewAccountView = false;
+  }
   
   gotoLoginPageClicked() {
-    this.login = true;
+    this.showLoginPage = true;
     this.userName = this.getUserName();
+    console.log('AUTH3 showLoginPage:' + this.showLoginPage + ' userLoggedIn: ' + this.userIsLoggedIn);
   }
 
   exitLoginPageClicked() {
-    this.login = false;
+    this.showLoginPage = false;
   }
 
 
   stayLoggedInChange() {
     console.log('AUTH: StayLoggedIn clicked');
+//    this.userIsLoggedIn = !this.userIsLoggedIn ;
   }
 
   logoutClicked() {
@@ -217,6 +250,7 @@ export class HomePage {
   addAccountClicked(value){    
     console.log("AUTH: AddAccount clicked: " + value.mail + ' ' + value.name);
     this.newUserAccount(value);
+    this.newAccountViewExitClicked();
   }
 
 
