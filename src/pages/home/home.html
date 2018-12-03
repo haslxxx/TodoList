@@ -10,8 +10,8 @@
 <ion-content padding>
 
   <!-- PART2  Brief User information   -->
-  <ion-item *ngIf="!showLoginPage">
-    <ion-card>    
+  <ion-card class="mycard" *ngIf="!showLoginPage">
+        
 
       <p>
         Dieses <strong><i>Mini-Kanban</i></strong> besteht nur aus <strong><i>2 Boards</i></strong>. 
@@ -34,13 +34,13 @@
         <ion-icon name="information-circle" color="primary"></ion-icon>
       </p>
       
-    </ion-card>
-    <ion-card>
+      <br><br>
+      <div style="color:blue;padding: 3px;">
       <br>Hallo &nbsp; <b>{{userName}}</b> &nbsp;&nbsp;&nbsp;&nbsp;
       <button ion-button small float-right (click)="gotoLoginPageClicked()" >Login ändern</button>
-    </ion-card>
+      </div>
      <!--  {{userId}} -->
-  </ion-item>
+  </ion-card>
    <!--  --> 
 
 <!-- PART1  User Login /authentication -->
@@ -51,7 +51,7 @@
         Du bist eingeloggt als: &nbsp; <b>{{userName}}</b>
         <br><br>
         <button ion-button  (click)="logoutClicked()" type="submit">Ausloggen ?</button>
-        <button ion-button item-right (click)="exitLoginPageClicked()" type="submit">Exit</button>
+        <button ion-button  (click)="exitLoginPageClicked()" type="submit">Exit</button>
 
     </ion-item>
   </ion-card>
