@@ -5,7 +5,6 @@ import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms'
 import { KanbandataProvider } from '../../providers/kanbandata/kanbandata';
 //Login
 import { AngularFireAuth } from '@angular/fire/auth';
-//import { BrowserModule } from '@angular/platform-browser';
 
 export class EmailPasswordCredentials {
   email: string;
@@ -28,6 +27,9 @@ export class HomePage {
   stayLoggedIn: boolean = true;
   userName: string = "DUMMY";
   userId: string = "00";
+  user ; //user profile
+  email;
+
 
   constructor(
     public navCtrl: NavController, 
@@ -41,10 +43,6 @@ export class HomePage {
     // passiert nun im callback zum AuthChange    
       // --> this.myData.subscribeFirestoreCollection(); //An Goo firestore "andocken" .. der rest passiert im callback in
     this.subscribeAuthChange(); // listen to changes in authorization
-
-    //IRGENDEIN DELAY
-    // this.delay(2000);
-    // console.log('delay left');
   }
 
   ionViewWillLoad(){
@@ -61,35 +59,21 @@ export class HomePage {
     });
   }
 
-  user ; //user profile
-  //name;
-  email;
-  //photoUrl;
-  //uid;
-  //emailVerified;
-
-  subscribeAuthChange() {  //change in logged in user
-    
+  subscribeAuthChange() {  //change in logged in user    
     var that = this;
     this.afAuth.auth.onAuthStateChanged(function(user) {
       that.user = user;
       console.log('AUTH: userAuthchange ');
       
       if (user) {  // User is signed in.       
-        console.log('AUTH: userAuthchange user valid');
-        
+        console.log('AUTH: userAuthchange user valid');        
         that.userIsLoggedIn = true;
-
         that.userName = user.displayName;
         that.email = user.email;
-        //that.photoUrl = user.photoURL;
-        //that.emailVerified = user.emailVerified;
         that.userId = user.uid;  // The user's ID, unique to the Firebase project. Do NOT use
                         // this value to newUserAccount with your backend server, if
                         // you have one. Use User.getToken() instead.
 
-        //that.userName = user.displayName;
-        //that.userId = user.uid;
         var today: String = new Date().toISOString(); // Timestamp for LastVisited
         if (that.newUser) { // for a new account the value for user.displayName isn't set yet at this time
           //user.displayName = that.newUserName;  !! 'read only' property
@@ -104,18 +88,19 @@ export class HomePage {
         console.log('AUTH2 showLoginPage:' + that.showLoginPage + ' userLoggedIn: ' + that.userIsLoggedIn);
         that.userLoggedIn.emit(that.userIsLoggedIn); // submit status to Tabs page
 
+        //ONE TIME USAGE
+        //that.myData.copyMyItemsToUserStructure(); //to copy data of my old structure to the new one
+
       } else {
         // No user is signed in.
         console.log('AUTH: userAuthchange user NOT logged in');
         that.userName = "";
         that.userIsLoggedIn = false;
         that.userLoggedIn.emit(that.userIsLoggedIn); // submit status to Tabs page
-  //      that.userId = "00";
       }
     });
 
   }
-
 
   getUserId() {
     if (this.user) {
@@ -125,7 +110,6 @@ export class HomePage {
       return "00";
     }   
   }
-
   
   getUserName() {
     if (this.user) {
@@ -141,7 +125,6 @@ export class HomePage {
   }
 
 
-//-------------------------------------------------
   newUser: boolean = false;
   newUserName: string = "";
 
@@ -149,7 +132,6 @@ export class HomePage {
     console.log('AUTH: create useraccount');
     this.newUser = true;
     this.newUserName = credentials.name;
-    //debugger;
     var that = this;
     this.afAuth.auth.createUserWithEmailAndPassword(credentials.mail, credentials.pwd)
     .then (function() {
@@ -161,16 +143,12 @@ export class HomePage {
 
       that.updateUserProfile(credentials.name); // namen nachträglich in den account einfügen (asynchron !!)
         //  ... hierher kommen wir niemals !!!
-        // hier gehts weiter ohne daß befehl oben schon fertig !! 
-
-        //If the new account was created, the user is signed in automatically. 
     })
     .catch(function(error) { // Handle Errors here.     
         var errorCode = error.code;
         var errorMessage = error.message;        
         if(errorCode) {
           console.log('AUTH: account create error ' + errorCode + '  ' + errorMessage);
-//          confirm(errorMessage);
           alert(errorMessage);
         };
     });
@@ -202,7 +180,6 @@ export class HomePage {
       console.log('AUTH: Login OK ');
       that.showLoginPage = false;  // back to homepage
       //If the new account was created, the user is signed in automatically. 
-//      confirm('showLoginPage Successful');
       alert('Login Successful');
     })
     .catch(function(error) { // Handle Errors here.
@@ -211,7 +188,6 @@ export class HomePage {
       var errorMessage = error.message;      
       if(errorCode) {
         console.log('AUTH: error ' + errorCode + '  ' + errorMessage);
-//        confirm(errorMessage);
         alert(errorMessage);
       };
     });
@@ -252,7 +228,6 @@ export class HomePage {
 
   stayLoggedInChange() {
     console.log('AUTH: StayLoggedIn clicked');
-//    this.userIsLoggedIn = !this.userIsLoggedIn ;
   }
 
   logoutClicked() {

@@ -27,7 +27,6 @@ export class KanbandataProvider {
   // 2.)
   //myStorage:Storage;
   // 3.)  
-//####################################
   itemsCollection: AngularFirestoreCollection<BacklogItem> ;
   itemsCollectionUser: AngularFirestoreCollection<BacklogItem>;
 
@@ -54,12 +53,8 @@ export class KanbandataProvider {
 
       // 3.)
       //this.afs = afstore; //firestore objekt speichern
-//####################################### ALT
-  //    this.itemsCollection  = this.afs.collection('mykanbanbacklog'); // Name der collection = wurzel der daten
-//####################################### NEU Mandantenfähig
       this.itemsCollectionUser  =  this.afs.collection('TODOkanban');  // Name der collection = wurzel der daten
       
-
       this.toastOptions = {
         message: 'Externe Datenänderung !',
         duration: 5000,
@@ -75,8 +70,9 @@ export class KanbandataProvider {
     this.dataSubject.next(this.backlogItems);
   }
 
-  // 2.) ############## Local STORAGE 
+  // 2.) ############## Local STORAGE  ...OBSOLETE
   restoreItems() {
+    var that = this;
     this.myStorage.length().then((val) => { 
       console.log("KBD: StorageLength");
       console.log(val);    
@@ -93,14 +89,14 @@ export class KanbandataProvider {
           } else {
             console.log("KBD: Found Local Kanban data"); // HURRA Daten sind vorhanden
             // Daten vom LOCAL STORAGE nach priorität sortiert ins lokale ARRAY kopieren
-            this.updateBacklogItems(val1);
-            
+//            this.updateBacklogItems(val1);
+
           } 
         });   
       };
     });  
 
- }  
+  }  
 
   saveKanbanItem(newItem: BacklogItem) {
     this.deleteKanbanItem(newItem, true); // falls es ein update ist löschen wir das original vorher um es verändert einzufügen
@@ -123,7 +119,6 @@ export class KanbandataProvider {
     }
   }
   
-
   // 2.) local  STORAGE ZUGRIFF
   private pushStorage() { //schreibt das gesamte array neu ins storage
     this.myStorage.set('kanbantodo', this.backlogItems).then(() => { //ab ins geheime storage
@@ -133,28 +128,19 @@ export class KanbandataProvider {
     });
   }
 
-
   // 3.) FIRESTORE ZUGRIFF
   private writeFirestoreItem(itemToWrite: BacklogItem){  // speichert ein eizelnes item in firestore
     console.log("KBD: FirestoreItem written") ;
     this.fsPushInitiated++; // Verhindert, daß das callback den toast zeigt
     var id = String(itemToWrite.id);
-//####################################### ALT
-    //var setDocRef = this.afs.collection('mykanbanbacklog').doc(id).set(itemToWrite);
-//####################################### NEU Mandantenfähige struktur
     var mailAddr: string = this.user.email; 
     console.log("KBD2: new userdata write " + mailAddr + ' ' + this.user.displayName + ' ' + id);
     var setUserdocRef = this.afs.collection('TODOkanban').doc(mailAddr).collection('data').doc(id).set(itemToWrite);
-
 
     this.itemsCollectionUser = this.afs.collection('TODOkanban').doc(mailAddr).collection('data');
   }
 
   subscribeFirestoreCollection() {
-//#######################################
-  //  this.itemsCollection
-//####################################### NEU Mandantenfähig
-    
     var mailAddr: string = this.user.email; 
     console.log('KBD: Subscribing FirebaseCollection ' + mailAddr);  
     this.itemsCollectionUser = this.afs.collection('TODOkanban').doc(mailAddr).collection('data');
@@ -185,10 +171,6 @@ export class KanbandataProvider {
     console.log("KBD: FirestoreItem deleted") ;
     this.fsPushInitiated++; // Verhindert, daß das callback den toast zeigt
     var id = String(itemToDelete.id);
-//#######################################  ALT
-    //var setDoc = this.afs.collection('mykanbanbacklog').doc(id);
-    //setDoc.delete();
-//#######################################  NEU
     this.itemsCollectionUser.doc(id).delete();
   }
 
@@ -232,7 +214,6 @@ export class KanbandataProvider {
     this.backlogItems = sortedItems;
   }
 
-
   public getDataSubject() {
     return this.dataSubject;
   }
@@ -269,32 +250,26 @@ export class KanbandataProvider {
 
     console.log("KBD1: new userdata set " + user.email + ' ' + userName + ' ' + date);
     var docRef = this.afs.collection('TODOkanban');
-//    return;
-    
-      docRef.doc(user.email)
-      // If the document does not exist, it will be created. 
-      // If the document does exist, its contents will be overwritten with the newly provided data
-        .set({'name': userName,         'dateLastVisited': date         })  //set dateLastVisited and Name fields
-        .then(() => {
-            console.log('KBD1: userdata ok ' + user.email);
-            if (newUser) { //add first dummydataentry to establish structure
-              var email: string = user.email;
-              var id:string = '0';
+    docRef.doc(user.email)
+    // If the document does not exist, it will be created. 
+    // If the document does exist, its contents will be overwritten with the newly provided data
+      .set({'name': userName,         'dateLastVisited': date         })  //set dateLastVisited and Name fields
+      .then(() => {
+          console.log('KBD1: userdata ok ' + user.email);
+          if (newUser) { //add first dummydataentry to establish structure
+            var email: string = user.email;
+            var id:string = '10000';
 
-              that.afs.collection('TODOkanban').doc(email).collection('data').doc(id).set(that.backlogItemEmpty)
-                .then (() => {that.subscribeFirestoreCollection();});
+            that.afs.collection('TODOkanban').doc(email).collection('data').doc(id).set(that.backlogItemEmpty)
+              .then (() => {that.subscribeFirestoreCollection();});
 
-            } else {
-              that.subscribeFirestoreCollection();
-            }
-
-            
-          })
-          .catch(() => {
-            console.log('KBD1: userdata nok '+ user.email);
-          });
-  
-
+          } else {
+            that.subscribeFirestoreCollection();
+          }            
+    })
+      .catch(() => {
+        console.log('KBD1: userdata nok '+ user.email);
+    });
   }
 
 
@@ -305,7 +280,7 @@ export class KanbandataProvider {
   {
     id: 1,
     title: 'Dummyeintrag',
-    description: 'Hier steht di beschreibung',
+    description: 'Hier steht die beschreibung',
     category: Cat.SONSTIGES,
     dateDue: null,
     dateType: null,
@@ -319,13 +294,13 @@ export class KanbandataProvider {
     
   backlogItemEmpty:  BacklogItem   
   = {
-  id: 0,
-  title: 'Empty Item',
-  description: '',
+  id: 10000,
+  title: 'Hallo Ich bin dein erster Punkt',
+  description: 'Du kannst mich löschen, wenn du erst einmal eigene Punkte hast',
   category: Cat.SONSTIGES,
   dateDue: null,
   dateType: null,
-  priority: 0,
+  priority: 1,
   status: ItemStatus.LOGGED,
   weight: ItemWeight.NORMAL,
   dateDone: null 
@@ -334,6 +309,31 @@ export class KanbandataProvider {
   getEmptyItem() {
   return this.backlogItemEmpty;
   } 
+
+  
+  //###################### COPY  
+  copyMyItemsToUserStructure () {  // one time method to copy wolfgangs items from single user to multiuser structure
+    console.log('COPY ALL ITEMS from kanbandata');
+    var that = this;
+    var oldStructure: AngularFirestoreCollection<BacklogItem> = this.afs.collection('mykanbanbacklog');
+    
+
+    // get old data
+    oldStructure
+    .valueChanges()
+    .subscribe(firestoreData=>{ // Hier steht nun was zu tun ist , wannimmer sich die daten draußen im store ändern
+      if (firestoreData.length != 0) {
+        console.log("KBD: Got OLD Firestore items"); 
+
+        var oldData: Array<BacklogItem>; //= firestoreData;
+        oldData = firestoreData;
+        for (let item of oldData) {
+          that.writeFirestoreItem(item);
+        }
+      };       
+    });   
+
+  }
 
 
 
